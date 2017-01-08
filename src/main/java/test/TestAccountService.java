@@ -2,10 +2,11 @@ package test;
 
 import domain.Account;
 import service.AccountService;
-import service.UserService;
 
 import javax.xml.ws.WebServiceRef;
 import java.net.MalformedURLException;
+import java.util.List;
+
 
 /**
  * Created by adam on 07.01.17.
@@ -13,21 +14,29 @@ import java.net.MalformedURLException;
 public class TestAccountService {
 
     @WebServiceRef(wsdlLocation="http://localhost:8000/account/addAccount?wsdl")
-    static AccountService userService = new AccountService();
+    static AccountService accountService = new AccountService();
+
+    private static final String WS_URL = "http://localhost:8000/account/addAccount?wsdl";
 
 
     public static void main(String[] args) throws MalformedURLException {
         TestAccountService testSoapService = new TestAccountService();
         testSoapService.doTestAddAccount();
+        testSoapService.doTestGetAccounts();
     }
-
-
-
 
 
     public void doTestAddAccount() {
         try {
-            Account account = userService.addAccount();
+            Account account = accountService.addAccount();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void doTestGetAccounts() {
+        try {
+            List<Account> accounts = accountService.getAccounts();
         } catch(Exception e) {
             e.printStackTrace();
         }

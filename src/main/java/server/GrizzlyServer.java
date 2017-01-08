@@ -3,10 +3,10 @@ package server;
 
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.jaxws.JaxwsHandler;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import service.AccountService;
 import service.UserService;
 
 import javax.ws.rs.core.UriBuilder;
@@ -36,8 +36,10 @@ public class GrizzlyServer {
         //NetworkListener networkListener = new NetworkListener("jaxws-listener", "0.0.0.0", SOAP_PORT);
 
         HttpHandler userHandler = new JaxwsHandler(new UserService());
+        HttpHandler accountHandler = new JaxwsHandler(new AccountService());
 
         httpServer.getServerConfiguration().addHttpHandler(userHandler, "/user");
+        httpServer.getServerConfiguration().addHttpHandler(accountHandler, "/account");
 
         //httpServer.addListener(networkListener);
         httpServer.start();

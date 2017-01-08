@@ -39,6 +39,10 @@ public class User {
         this.password = password;
     }
 
+    public void addAccount(Account account) {
+        accounts.add(account);
+    }
+
     public ObjectId getId() {
         return id;
     }

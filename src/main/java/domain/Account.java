@@ -2,6 +2,7 @@ package domain;
 
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.query.ValidationException;
 
 import javax.validation.constraints.NotNull;
 
@@ -40,5 +41,13 @@ public class Account {
 
     public void setBalance(double balance) {
         this.balance = balance;
+    }
+
+    public void updateBalance(double amount) {
+        if(amount > 0) {
+            balance += amount;
+        } else {
+            throw new ValidationException("Invalid amount.");
+        }
     }
 }

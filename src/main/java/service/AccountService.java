@@ -2,10 +2,14 @@ package service;
 
 import database.DatabaseService;
 import domain.Account;
+import domain.User;
+import helper.AuthorizationTool;
 import org.mongodb.morphia.Datastore;
 
+import javax.annotation.Resource;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
+import javax.xml.ws.WebServiceContext;
 import java.util.List;
 
 /**
@@ -15,22 +19,29 @@ import java.util.List;
 @WebService
 public class AccountService {
 
+    @Resource
+    private WebServiceContext context;
+
+    private AuthorizationTool authTool = new AuthorizationTool();
+
     @WebMethod
     public Account addAccount() {
         System.out.println("Adding new account.");
         Datastore datastore = DatabaseService.getDatastore();
+        User user = authTool.checkUserExistence(context);
         Account account = new Account(generateIBAN(datastore));
-        String index = "109683";
+        user.addAccount(account);
         datastore.save(account);
+        datastore.save(user);
         return account;
     }
+
 
     @WebMethod
     public List<Account> getAccounts() {
         System.out.println("Getting user accounts.");
-        Datastore datastore = DatabaseService.getDatastore();
-        //Pobranie usera oraz jego kont
-        return null;
+        User user = authTool.checkUserExistence(context);
+        return user.getAccounts();
     }
 
     private String generateIBAN(Datastore datastore) {

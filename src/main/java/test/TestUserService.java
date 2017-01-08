@@ -20,9 +20,6 @@ public class TestUserService {
     }
 
 
-
-
-
     public void doTestRegisterUser() {
         try {
             userService.registerUser("adam", "niewartobylo");
