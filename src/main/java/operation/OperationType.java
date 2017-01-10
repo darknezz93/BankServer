@@ -13,7 +13,7 @@ public enum OperationType {
     /**
      * Wypłata własna
      */
-    Withdraw,
+    Withdrawal,
 
     /**
      * Przelew zewnętrzny

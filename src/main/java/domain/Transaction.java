@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 
 @Entity
-public class Operation {
+public class Transaction {
 
     @Id
     @XmlJavaTypeAdapter(ObjectIdJaxAdapter.class)
@@ -34,6 +34,18 @@ public class Operation {
 
     @NotNull
     private OperationType operationType;
+
+    public Transaction(String title,
+                       String sourceAccountNumber,
+                       String targetAccountNumber,
+                       double balance,
+                       OperationType operationType) {
+        this.title = title;
+        this.sourceAccountNumber = sourceAccountNumber;
+        this.targetAccountNumber = targetAccountNumber;
+        this.balance = balance;
+        this.operationType = operationType;
+    }
 
     public ObjectId getId() {
         return id;

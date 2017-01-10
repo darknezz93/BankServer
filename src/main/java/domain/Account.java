@@ -43,9 +43,17 @@ public class Account {
         this.balance = balance;
     }
 
-    public void updateBalance(double amount) {
+    public void increaseBalance(double amount) {
         if(amount > 0) {
             balance += amount;
+        } else {
+            throw new ValidationException("Invalid amount.");
+        }
+    }
+
+    public void decreaseBalance(double amount) {
+        if(amount > 0) {
+            balance -= amount;
         } else {
             throw new ValidationException("Invalid amount.");
         }
