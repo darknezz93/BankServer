@@ -25,5 +25,13 @@ public class DatabaseService {
     }
 
 
+    public static Account findAccountByAccountNumber(Datastore datastore, String targetAccountNumber) throws Exception {
+        Account account = datastore.createQuery(Account.class).field("accountNumber").equal(targetAccountNumber).get();
+        if(account == null) {
+            throw new Exception("Account does not exists");
+        }
+        return account;
+    }
+
 
 }

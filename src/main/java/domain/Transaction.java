@@ -35,16 +35,29 @@ public class Transaction {
     @NotNull
     private OperationType operationType;
 
+    @NotNull
+    private double amount;
+
+    public Transaction(String title,
+                       String sourceAccountNumber,
+                       String targetAccountNumber,
+                       OperationType operationType,
+                       double amount) {
+       this(title, sourceAccountNumber, targetAccountNumber, 0, operationType, amount);
+    }
+
     public Transaction(String title,
                        String sourceAccountNumber,
                        String targetAccountNumber,
                        double balance,
-                       OperationType operationType) {
+                       OperationType operationType,
+                       double amount) {
         this.title = title;
         this.sourceAccountNumber = sourceAccountNumber;
         this.targetAccountNumber = targetAccountNumber;
         this.balance = balance;
         this.operationType = operationType;
+        this.amount = amount;
     }
 
     public ObjectId getId() {
@@ -93,5 +106,13 @@ public class Transaction {
 
     public void setOperationType(OperationType operationType) {
         this.operationType = operationType;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 }
