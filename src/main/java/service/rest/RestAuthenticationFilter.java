@@ -32,8 +32,8 @@ public class RestAuthenticationFilter implements ContainerRequestFilter {
     private static final Response ACCESS_FORBIDDEN = Response.status(Response.Status.FORBIDDEN)
             .entity("Access blocked for all users !!").build();
 
-    private static final String USERNAME = "admin";
-    private static final String PASSWORD = "password";
+    public static final String USERNAME = "admin";
+    public static final String PASSWORD = "password";
 
     @Override
     public void filter(ContainerRequestContext requestContext)
@@ -76,7 +76,7 @@ public class RestAuthenticationFilter implements ContainerRequestFilter {
             System.out.println(username);
             System.out.println(password);
 
-            if(!password.equals(PASSWORD) || !username.equals(PASSWORD)) {
+            if(!password.equals(PASSWORD) || !username.equals(USERNAME)) {
                 requestContext.abortWith(ACCESS_DENIED);
                 return;
             }

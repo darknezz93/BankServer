@@ -20,13 +20,15 @@ import javax.ws.rs.core.Response;
 public class Rest {
 
     @POST
-    @Path("/externalTransfer")
+    @Path("/transfer")
     @Consumes({"application/json"})
     @Produces({"application/json"})
-    public Response doExternalTransfer(@QueryParam("amount") int amount,
+    public Response doExternalTransfer(@QueryParam("amount") int amountInt,
                                        @QueryParam("sender_account") String senderAccount,
                                        @QueryParam("receiver_account") String receiverAccount,
                                        @QueryParam("title") String title) throws Exception {
+
+        double amount = convertToDouble(amountInt);
         Transaction transaction = new Transaction(title,
                 senderAccount,
                 receiverAccount,
@@ -47,6 +49,13 @@ public class Rest {
         datastore.save(account);
         datastore.save(transaction);
         return Response.status(201).entity(transaction).build();
+    }
+
+
+    private double convertToDouble(int amount) {
+        String amountStr = Integer.toString(amount);
+        amountStr = amountStr.substring(0, amountStr.length() - 2) + "." + amountStr.substring(amountStr.length() - 2, amountStr.length());
+        return Double.parseDouble(amountStr);
     }
 
 

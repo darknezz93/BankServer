@@ -10,6 +10,8 @@ import javax.annotation.Resource;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,12 +26,14 @@ public class AccountService {
 
     private AuthorizationTool authTool = new AuthorizationTool();
 
+    private static final String BANK_NUMBER = "00109683";
+
     @WebMethod
     public Account addAccount() {
         System.out.println("Adding new account.");
         Datastore datastore = DatabaseService.getDatastore();
         User user = authTool.checkUserExistence(context);
-        Account account = new Account(generateIBAN(datastore));
+        Account account = new Account(generateAccountNumber(datastore));
         user.addAccount(account);
         datastore.save(account);
         datastore.save(user);
@@ -44,7 +48,23 @@ public class AccountService {
         return user.getAccounts();
     }
 
-    private String generateIBAN(Datastore datastore) {
-        return "NieWartoBylo";
+    private String generateAccountNumber(Datastore datastore) {
+        String accountNumber = generateCheckSum() + BANK_NUMBER;
+        List<Account> accounts = datastore.find(Account.class).asList();
+        List<Long> numbers = new ArrayList<>();
+        if(accounts != null) {
+            for(Account account : accounts) {
+                numbers.add(Long.valueOf(account.getAccountNumber().substring(8, 26)));
+            }
+            Long max = Collections.max(numbers);
+            accountNumber += Long.toString(max+1);
+        } else {
+            accountNumber += "1000000000000000";
+        }
+        return accountNumber;
+    }
+
+    private String generateCheckSum() {
+        return "00";
     }
 }
