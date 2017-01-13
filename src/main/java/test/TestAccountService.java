@@ -28,7 +28,7 @@ public class TestAccountService {
 
     public void doTestAddAccount() {
         try {
-            Account account = accountService.addAccount();
+            Account account = accountService.addAccount("YWRtaW46cGFzc3dvcmQ=");
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -36,7 +36,7 @@ public class TestAccountService {
 
     public void doTestGetAccounts() {
         try {
-            List<Account> accounts = accountService.getAccounts();
+            List<Account> accounts = accountService.getAccounts("YWRtaW46cGFzc3dvcmQ=");
         } catch(Exception e) {
             e.printStackTrace();
         }

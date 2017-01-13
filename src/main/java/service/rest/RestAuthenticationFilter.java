@@ -38,6 +38,7 @@ public class RestAuthenticationFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext)
     {
+        System.out.println("Filter");
         Method method = resourceInfo.getResourceMethod();
 
         if(!method.isAnnotationPresent(PermitAll.class))
@@ -65,7 +66,7 @@ public class RestAuthenticationFilter implements ContainerRequestFilter {
             final String encodedUserPassword = authorization.get(0).replaceFirst(AUTHENTICATION_SCHEME + " ", "");
 
             //Decode username and password
-            String usernameAndPassword = new String(Base64.decode(encodedUserPassword.getBytes()));;
+            String usernameAndPassword = new String(Base64.decode(encodedUserPassword.getBytes()));
 
             //Split username and password tokens
             final StringTokenizer tokenizer = new StringTokenizer(usernameAndPassword, ":");

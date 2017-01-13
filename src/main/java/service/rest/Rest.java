@@ -8,7 +8,10 @@ import org.json.JSONObject;
 import org.mongodb.morphia.Datastore;
 
 import javax.inject.Singleton;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 /**
@@ -16,27 +19,26 @@ import javax.ws.rs.core.Response;
  */
 
 @Singleton
-@Path("/rest")
+@Path("/")
 public class Rest {
 
     @POST
     @Path("/transfer")
     @Consumes({"application/json"})
     @Produces({"application/json"})
-    public Response doExternalTransfer(@QueryParam("amount") int amountInt,
-                                       @QueryParam("sender_account") String senderAccount,
-                                       @QueryParam("receiver_account") String receiverAccount,
-                                       @QueryParam("title") String title) throws Exception {
-
-        double amount = convertToDouble(amountInt);
-        Transaction transaction = new Transaction(title,
-                senderAccount,
-                receiverAccount,
+    public Response doExternalTransfer(RestObject restObject) throws Exception {
+        System.out.println("Rest");
+        double amount = convertToDouble(restObject.getAmount());
+        Transaction transaction = new Transaction(restObject.getTitle(),
+                restObject.getSender_account(),
+                restObject.getReceiver_account(),
                 OperationType.ExternalTransfer,
                 amount);
 
-        if(transaction == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        if(amount < 0) {
+            JSONObject json = new JSONObject();
+            json.put("error", "Amount value must be > 0");
+            return Response.status(Response.Status.BAD_REQUEST).entity(json.toString()).build();
         }
         Datastore datastore = DatabaseService.getDatastore();
         Account account = DatabaseService.findAccountByAccountNumber(datastore, transaction.getTargetAccountNumber());

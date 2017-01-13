@@ -6,10 +6,9 @@ import domain.User;
 import helper.AuthorizationTool;
 import org.mongodb.morphia.Datastore;
 
-import javax.annotation.Resource;
 import javax.jws.WebMethod;
+import javax.jws.WebParam;
 import javax.jws.WebService;
-import javax.xml.ws.WebServiceContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,18 +20,15 @@ import java.util.List;
 @WebService
 public class AccountService {
 
-    @Resource
-    private WebServiceContext context;
-
     private AuthorizationTool authTool = new AuthorizationTool();
 
     private static final String BANK_NUMBER = "00109683";
 
     @WebMethod
-    public Account addAccount() {
+    public Account addAccount(@WebParam(name="encodedAuth") String encodedAuth) {
         System.out.println("Adding new account.");
         Datastore datastore = DatabaseService.getDatastore();
-        User user = authTool.checkUserExistence(context);
+        User user = authTool.checkUserExistence(encodedAuth);
         Account account = new Account(generateAccountNumber(datastore));
         user.addAccount(account);
         datastore.save(account);
@@ -42,9 +38,9 @@ public class AccountService {
 
 
     @WebMethod
-    public List<Account> getAccounts() {
+    public List<Account> getAccounts(@WebParam(name="encodedAuth") String encodedAuth) {
         System.out.println("Getting user accounts.");
-        User user = authTool.checkUserExistence(context);
+        User user = authTool.checkUserExistence(encodedAuth);
         return user.getAccounts();
     }
 
@@ -63,6 +59,7 @@ public class AccountService {
         }
         return accountNumber;
     }
+
 
     private String generateCheckSum() {
         return "00";
