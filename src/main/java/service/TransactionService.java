@@ -13,11 +13,9 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.mongodb.morphia.Datastore;
 import service.rest.RestAuthenticationFilter;
 
-import javax.annotation.Resource;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
-import javax.xml.ws.WebServiceContext;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
@@ -30,16 +28,15 @@ import java.util.Properties;
 @WebService
 public class TransactionService {
 
-    @Resource
-    private WebServiceContext context;
 
     private AuthorizationTool authTool = new AuthorizationTool();
 
 
     @WebMethod
     public void doPayment(@WebParam(name="accountNumber") String accountNumber,
-                          @WebParam(name="amount") double amount) throws Exception {
-        User user = authTool.checkUserExistence(context);
+                          @WebParam(name="amount") double amount,
+                          @WebParam(name="encodedAuth") String encodedAuth) throws Exception {
+        User user = authTool.checkUserExistence(encodedAuth);
         Datastore datastore = DatabaseService.getDatastore();
         Account account = findUserAccountByAccountNumber(user.getAccounts(), accountNumber);
             if(amount < 0) {
@@ -54,8 +51,9 @@ public class TransactionService {
 
     @WebMethod
     public void doWithdrawal(@WebParam(name="accountNumber") String accountNumber,
-                             @WebParam(name="amount") double amount) throws Exception {
-        User user = authTool.checkUserExistence(context);
+                             @WebParam(name="amount") double amount,
+                             @WebParam(name="encodedAuth") String encodedAuth) throws Exception {
+        User user = authTool.checkUserExistence(encodedAuth);
         Datastore datastore = DatabaseService.getDatastore();
         Account account = findUserAccountByAccountNumber(user.getAccounts(), accountNumber);
         if(amount > account.getBalance()) {
@@ -72,8 +70,9 @@ public class TransactionService {
     public void doInternalTransfer(@WebParam(name="sourceAccountNumber") String sourceAccountNumber,
                                    @WebParam(name="targetAccountNumber") String targetAccountNumber,
                                    @WebParam(name="title") String title,
-                                   @WebParam(name="amount") double amount) throws Exception {
-        User user = authTool.checkUserExistence(context);
+                                   @WebParam(name="amount") double amount,
+                                   @WebParam(name="encodedAuth") String encodedAuth) throws Exception {
+        User user = authTool.checkUserExistence(encodedAuth);
         Datastore datastore = DatabaseService.getDatastore();
         Account sourceAccount = findUserAccountByAccountNumber(user.getAccounts(), sourceAccountNumber);
         Account targetAccount = DatabaseService.findAccountByAccountNumber(datastore, targetAccountNumber);
@@ -101,8 +100,9 @@ public class TransactionService {
     public void doExternalTransfer(@WebParam(name="sourceAccountNumber") String sourceAccountNumber,
                                    @WebParam(name="targetAccountNumber") String targetAccountNumber,
                                    @WebParam(name="title") String title,
-                                   @WebParam(name="amount") double amount) throws Exception {
-        User user = authTool.checkUserExistence(context);
+                                   @WebParam(name="amount") double amount,
+                                   @WebParam(name="encodedAuth") String encodedAuth) throws Exception {
+        User user = authTool.checkUserExistence(encodedAuth);
         Datastore datastore = DatabaseService.getDatastore();
         Account sourceAccount = findUserAccountByAccountNumber(user.getAccounts(), sourceAccountNumber);
 
@@ -116,14 +116,14 @@ public class TransactionService {
             HttpClient httpClient = new HttpClient();
             PostMethod postMethod = new PostMethod(url);
             byte[] bytesAuth = Base64.encodeBase64((RestAuthenticationFilter.USERNAME + ":" + RestAuthenticationFilter.PASSWORD).getBytes());
-            String encodedAuth = new String(bytesAuth);
+            String encodedString = new String(bytesAuth);
             Header mtHeader = new Header();
             mtHeader.setName("content-type");
             mtHeader.setValue("application/x-www-form-urlencoded");
             mtHeader.setName("accept");
             mtHeader.setValue("application/json");
             mtHeader.setName("Authorization");
-            mtHeader.setValue("Basic " + encodedAuth);
+            mtHeader.setValue("Basic " + encodedString);
             postMethod.addParameter("sender_account", sourceAccountNumber);
             postMethod.addParameter("receiver_account", targetAccountNumber);
             postMethod.addParameter("title", title);

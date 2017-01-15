@@ -18,11 +18,16 @@ public class UserService {
 
     @WebMethod
     public void registerUser(@WebParam(name="userName") String userName,
-                             @WebParam(name="password") String password) {
+                             @WebParam(name="password") String password) throws Exception {
         System.out.println("User registration");
         Datastore datastore = DatabaseService.getDatastore();
         User user = new User(userName, password);
-        datastore.save(user);
+        User userFromDb = datastore.createQuery(User.class).field("userName").equal(userName).get();
+        if(userFromDb == null) {
+            throw new Exception("User already exists");
+        } else {
+            datastore.save(user);
+        }
     }
 
 
