@@ -2,6 +2,7 @@ package service;
 
 import database.DatabaseService;
 import domain.User;
+import helper.AuthorizationTool;
 import org.mongodb.morphia.Datastore;
 
 import javax.jws.WebMethod;
@@ -15,6 +16,7 @@ import javax.jws.WebService;
 @WebService
 public class UserService {
 
+    private AuthorizationTool authTool = new AuthorizationTool();
 
     @WebMethod
     public void registerUser(@WebParam(name="userName") String userName,
@@ -29,6 +31,17 @@ public class UserService {
             datastore.save(user);
         }
     }
+
+    @WebMethod
+    public boolean login(@WebParam(name="encodedAuth") String encodedAuth) {
+        User user = authTool.checkUserExistence(encodedAuth);
+        if(user != null) {
+            return true;
+        }
+        return false;
+    }
+
+
 
 
 }
