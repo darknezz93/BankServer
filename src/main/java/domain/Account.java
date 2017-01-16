@@ -21,6 +21,8 @@ public class Account {
     @NotNull
     private double balance;
 
+    public Account() {}
+
     public Account(String accountNumber) {
         this.balance = 0;
         this.accountNumber = accountNumber;

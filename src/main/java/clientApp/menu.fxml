@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientApp.controllers.MenuController">
+<columnConstraints>
+    <ColumnConstraints />
+</columnConstraints>
+<rowConstraints>
+    <RowConstraints />
+</rowConstraints>
+<children>
+    <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="228.0" prefWidth="616.0" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1">
+        <children>
+            <Button fx:id="paymentButton" layoutX="38.0" layoutY="39.0" mnemonicParsing="false" onAction="#listenPaymentButton" prefHeight="26.0" prefWidth="151.0" text="Wpłata własna" />
+            <Button fx:id="withdrawalButton" layoutX="233.0" layoutY="39.0" mnemonicParsing="false" onAction="#listenWithdrawalButton" prefHeight="26.0" prefWidth="151.0" text="Wypłata własna" />
+            <Button fx:id="internalTransferButton" layoutX="134.0" layoutY="99.0" mnemonicParsing="false" onAction="#listenInternalTransferButton" prefHeight="26.0" prefWidth="158.0" text="Przelew wewnętrzny" />
+            <Button fx:id="externalTransferButton" layoutX="322.0" layoutY="99.0" mnemonicParsing="false" onAction="#listenExternalTransferButton" prefHeight="26.0" prefWidth="151.0" text="Przelew zewnętrzny" />
+            <Button fx:id="operationHistoryButton" layoutX="421.0" layoutY="39.0" mnemonicParsing="false" onAction="#listenOperationHistoryButton" prefHeight="26.0" prefWidth="151.0" text="Historia operacji" />
+            <Button fx:id="addAccountButton" layoutX="260.0" layoutY="156.0" mnemonicParsing="false" onAction="#listenAddAccountButton" text="Dodaj konto" />
+        </children>
+    </Pane>
+</children>
+</GridPane>

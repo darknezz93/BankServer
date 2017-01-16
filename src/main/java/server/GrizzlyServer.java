@@ -10,9 +10,9 @@ import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.linking.DeclarativeLinkingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
-import service.AccountService;
-import service.TransactionService;
-import service.UserService;
+import service.AccountServiceImpl;
+import service.TransactionServiceImpl;
+import service.UserServiceImpl;
 import service.rest.Rest;
 import service.rest.RestAuthenticationFilter;
 
@@ -41,9 +41,9 @@ public class GrizzlyServer {
         config.register(LoggingFilter.class).register(RestAuthenticationFilter.class);
         HttpServer httpServer = GrizzlyHttpServerFactory.createHttpServer(soapUri, config);
 
-        HttpHandler userHandler = new JaxwsHandler(new UserService());
-        HttpHandler accountHandler = new JaxwsHandler(new AccountService());
-        HttpHandler transactionHandler = new JaxwsHandler(new TransactionService());
+        HttpHandler userHandler = new JaxwsHandler(new UserServiceImpl());
+        HttpHandler accountHandler = new JaxwsHandler(new AccountServiceImpl());
+        HttpHandler transactionHandler = new JaxwsHandler(new TransactionServiceImpl());
 
         httpServer.getServerConfiguration().addHttpHandler(userHandler, "/user");
         httpServer.getServerConfiguration().addHttpHandler(accountHandler, "/account");

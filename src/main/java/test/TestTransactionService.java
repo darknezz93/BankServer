@@ -1,6 +1,6 @@
 package test;
 
-import service.TransactionService;
+import service.TransactionServiceImpl;
 
 import javax.xml.ws.WebServiceRef;
 import java.net.MalformedURLException;
@@ -11,7 +11,7 @@ import java.net.MalformedURLException;
 public class TestTransactionService {
 
     @WebServiceRef(wsdlLocation="http://localhost:8000/transaction/doPayment?wsdl")
-    static TransactionService transactionService = new TransactionService();
+    static TransactionServiceImpl transactionService = new TransactionServiceImpl();
 
 
     public static void main(String[] args) throws MalformedURLException {
@@ -22,7 +22,7 @@ public class TestTransactionService {
 
     public void doTestDoPayment() {
         try {
-            transactionService.doPayment("213123123213", 78);
+           // transactionService.doPayment("213123123213", 78);
         } catch(Exception e) {
             e.printStackTrace();
         }

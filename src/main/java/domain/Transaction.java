@@ -38,6 +38,8 @@ public class Transaction {
     @NotNull
     private double amount;
 
+    public Transaction() {}
+
     public Transaction(String title,
                        String sourceAccountNumber,
                        String targetAccountNumber,

@@ -1,6 +1,6 @@
 package test;
 
-import service.UserService;
+import service.UserServiceImpl;
 
 import javax.xml.ws.WebServiceRef;
 import java.net.MalformedURLException;
@@ -11,7 +11,7 @@ import java.net.MalformedURLException;
 public class TestUserService {
 
     @WebServiceRef(wsdlLocation="http://localhost:8000/user/registerUser?wsdl")
-    static UserService userService = new UserService();
+    static UserServiceImpl userService = new UserServiceImpl();
 
 
     public static void main(String[] args) throws MalformedURLException {
@@ -22,7 +22,7 @@ public class TestUserService {
 
     public void doTestRegisterUser() {
         try {
-            userService.registerUser("adam", "niewartobylo");
+            userService.registerUser("YWRtaW46cGFzc3dvcmQ=");
         } catch(Exception e) {
             e.printStackTrace();
         }
