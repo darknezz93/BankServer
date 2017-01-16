@@ -19,4 +19,7 @@ public interface AccountService {
 
     @WebMethod
     public List<Account> getAccounts(@WebParam(name="encodedAuth") String encodedAuth);
+
+    @WebMethod
+    public List<Account> getOtherAccounts(@WebParam(name="encodedAuth") String encodedAuth);
 }

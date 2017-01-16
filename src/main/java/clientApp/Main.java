@@ -15,7 +15,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        URL url = new File("src/main/java/clientApp/sample.fxml").toURL();
+        URL url = new File("src/main/java/clientApp/layouts/sample.fxml").toURL();
         Parent root = FXMLLoader.load(url);
         primaryStage.setTitle("Klient konta bankowego");
         primaryStage.setScene(new Scene(root, 690, 519));

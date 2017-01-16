@@ -5,6 +5,7 @@ import domain.Account;
 import domain.User;
 import helper.AuthorizationTool;
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.query.Query;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -12,6 +13,7 @@ import javax.jws.WebService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by adam on 06.01.17.
@@ -42,6 +44,20 @@ public class AccountServiceImpl implements AccountService{
         System.out.println("Getting user accounts.");
         User user = authTool.checkUserExistence(encodedAuth);
         return user.getAccounts();
+    }
+
+    @WebMethod
+    public List<Account> getOtherAccounts(@WebParam(name="encodedAuth") String encodedAuth) {
+        System.out.println("Getting user accounts.");
+        User user = authTool.checkUserExistence(encodedAuth);
+        Datastore datastore = DatabaseService.getDatastore();
+        Query<Account> q = datastore.createQuery(Account.class);
+        q.or(
+                q.criteria("accountNumber").
+                        notIn(user.getAccounts().stream().map(acc -> acc.getAccountNumber()).collect(Collectors.toList()))
+        );
+        List<Account> accounts = q.asList();
+        return accounts;
     }
 
     private String generateAccountNumber(Datastore datastore) {

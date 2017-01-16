@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
 import service.AccountService;
 import service.TransactionService;
@@ -21,35 +22,52 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Created by adam on 16.01.17.
  */
-public class PaymentController {
+public class InternalTransferController {
 
     @FXML
-    private ComboBox<Account> accountComboBox;
+    private ComboBox<Account> senderAccountComboBox;
+
+    @FXML
+    private ComboBox<Account> receiverAccountComboBox;
 
     @FXML
     private AmountTextField amountTextField;
 
     @FXML
-    private Button paymentButton;
+    private TextField titleTextField;
+
+    @FXML
+    private Button doInternalTransferButton;
 
     @FXML
     private Label errorLabel;
 
     @FXML
+    private Label successLabel;
+
+    @FXML
     private Label balanceLabel;
 
-    private List<Account> accounts = new ArrayList<>();
+    private List<Account> senderAccounts = new ArrayList<>();
+
+    private List<Account> receiverAccounts = new ArrayList<>();
 
     @FXML
     public void initialize() throws MalformedURLException {
         AccountService accountService = getAccountService();
-        accounts = accountService.getAccounts(ClientAuth.getEncodedAuth());
-        accountComboBox.setItems(FXCollections.observableArrayList(accounts));
-        accountComboBox.setConverter(new StringConverter<Account>() {
+        senderAccounts = accountService.getAccounts(ClientAuth.getEncodedAuth());
+        receiverAccounts = accountService.getOtherAccounts(ClientAuth.getEncodedAuth());
+        initializeSenderAccountComboBox();
+        initializeReceiverAccountComboBox();
+
+    }
+
+    private void initializeSenderAccountComboBox() {
+        senderAccountComboBox.setItems(FXCollections.observableArrayList(senderAccounts));
+        senderAccountComboBox.setConverter(new StringConverter<Account>() {
             @Override
             public String toString(Account object) {
                 return object.getAccountNumber();
@@ -61,7 +79,7 @@ public class PaymentController {
             }
         });
 
-        accountComboBox.valueProperty().addListener(new ChangeListener<Account>() {
+        senderAccountComboBox.valueProperty().addListener(new ChangeListener<Account>() {
             @Override
             public void changed(ObservableValue<? extends Account> observable, Account oldValue, Account newValue) {
                 balanceLabel.setText(String.valueOf(newValue.getBalance()));
@@ -69,23 +87,54 @@ public class PaymentController {
         });
     }
 
+    private void initializeReceiverAccountComboBox() {
+        receiverAccountComboBox.setItems(FXCollections.observableArrayList(receiverAccounts));
+        receiverAccountComboBox.setConverter(new StringConverter<Account>() {
+            @Override
+            public String toString(Account object) {
+                return object.getAccountNumber();
+            }
+
+            @Override
+            public Account fromString(String string) {
+                return null;
+            }
+        });
+    }
+
 
     @FXML
-    public void listenPaymentButton() throws Exception {
+    public void listenInternalTransferButton() throws Exception {
         resetLabels();
-        if(accountComboBox.getSelectionModel().getSelectedItem() == null) {
-            errorLabel.setText("Wybierz numer rachunku");
+        if(senderAccountComboBox.getSelectionModel().getSelectedItem() == null ||
+                receiverAccountComboBox.getSelectionModel().getSelectedItem() == null) {
+            errorLabel.setText("Wybierz oba numery rachunków");
             return;
         }
-        String accountNumber = accountComboBox.getSelectionModel().getSelectedItem().getAccountNumber();
+        String senderAccountNumber = senderAccountComboBox.getSelectionModel().getSelectedItem().getAccountNumber();
+        String receiverAccountNumber = receiverAccountComboBox.getSelectionModel().getSelectedItem().getAccountNumber();
         if (amountTextField.getText().equals("")) {
             errorLabel.setText("Wprowadź kwotę");
             return;
         }
         double amount = Double.valueOf(amountTextField.getText());
+        if(amount > senderAccountComboBox.getSelectionModel().getSelectedItem().getBalance()) {
+            errorLabel.setText("Kwota nie może być większa niż stan konta nadawcy.");
+            return;
+        }
+        if(titleTextField.getText().equals("")) {
+            errorLabel.setText("Wprowadź tytuł transakcji");
+            return;
+        }
+        String title = titleTextField.getText();
         TransactionService trnService = getTransactionService();
-        Account account = trnService.doPayment(accountNumber, amount, ClientAuth.getEncodedAuth());
+        Account account = trnService.doInternalTransfer(senderAccountNumber,
+                receiverAccountNumber,
+                title,
+                amount,
+                ClientAuth.getEncodedAuth());
         updateAccounts(account);
+        successLabel.setText("Przelew wewnątrzbankowy zakończony pozytywnie.");
     }
 
     private AccountService getAccountService() throws MalformedURLException {
@@ -97,7 +146,7 @@ public class PaymentController {
     }
 
     private void updateAccounts(Account account) {
-        for(Account acc : accounts) {
+        for(Account acc : senderAccounts) {
             if(account.getAccountNumber().equals(acc.getAccountNumber())) {
                 acc = account;
                 balanceLabel.setText(String.valueOf(acc.getBalance()));
@@ -117,7 +166,4 @@ public class PaymentController {
     private void resetLabels() {
         errorLabel.setText("");
     }
-
-
-
 }

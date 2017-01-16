@@ -59,7 +59,7 @@ public class LoginController {
         if(result) {
             successLabel.setText("Pomyślnie zalogowano do systemu.");
             ClientAuth.setEncodedAuth(encodedUserNameAndPassword);
-            openNewWindow("src/main/java/clientApp/menu.fxml", "Klient konta bankowego - menu");
+            openNewWindow("src/main/java/clientApp/layouts/menu.fxml", "Klient konta bankowego - menu");
         } else {
             errorLabel.setText("Niepoprawna nazwa użytkownika lub hasło");
         }

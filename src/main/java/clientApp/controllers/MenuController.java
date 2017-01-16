@@ -43,17 +43,17 @@ public class MenuController {
 
     @FXML
     public void listenPaymentButton() throws IOException {
-        openNewWindow("src/main/java/clientApp/payment.fxml", "Wpłata na konto");
+        openNewWindow("src/main/java/clientApp/layouts/payment.fxml", "Wpłata na konto");
     }
 
     @FXML
-    public void listenWithdrawalButton() {
-
+    public void listenWithdrawalButton() throws IOException {
+        openNewWindow("src/main/java/clientApp/layouts/withdrawal.fxml", "Wypłata z konta");
     }
 
     @FXML
-    public void listenInternalTransferButton() {
-
+    public void listenInternalTransferButton() throws IOException {
+        openNewWindow("src/main/java/clientApp/layouts/internalTransfer.fxml", "Przelew wewnątrzbankowy");
     }
 
     @FXML

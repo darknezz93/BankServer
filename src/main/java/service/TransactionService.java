@@ -19,12 +19,12 @@ public interface TransactionService {
                              @WebParam(name="encodedAuth") String encodedAuth) throws Exception;
 
     @WebMethod
-    public void doWithdrawal(@WebParam(name="accountNumber") String accountNumber,
+    public Account doWithdrawal(@WebParam(name="accountNumber") String accountNumber,
                              @WebParam(name="amount") double amount,
                              @WebParam(name="encodedAuth") String encodedAuth) throws Exception;
 
     @WebMethod
-    public void doInternalTransfer(@WebParam(name="sourceAccountNumber") String sourceAccountNumber,
+    public Account doInternalTransfer(@WebParam(name="sourceAccountNumber") String sourceAccountNumber,
                                    @WebParam(name="targetAccountNumber") String targetAccountNumber,
                                    @WebParam(name="title") String title,
                                    @WebParam(name="amount") double amount,

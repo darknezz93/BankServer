@@ -21,11 +21,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Created by adam on 16.01.17.
  */
-public class PaymentController {
+public class WithdrawalController {
 
     @FXML
     private ComboBox<Account> accountComboBox;
@@ -34,7 +33,7 @@ public class PaymentController {
     private AmountTextField amountTextField;
 
     @FXML
-    private Button paymentButton;
+    private Button withdrawalButton;
 
     @FXML
     private Label errorLabel;
@@ -71,7 +70,7 @@ public class PaymentController {
 
 
     @FXML
-    public void listenPaymentButton() throws Exception {
+    public void listenWithdrawalButton() throws Exception {
         resetLabels();
         if(accountComboBox.getSelectionModel().getSelectedItem() == null) {
             errorLabel.setText("Wybierz numer rachunku");
@@ -83,8 +82,12 @@ public class PaymentController {
             return;
         }
         double amount = Double.valueOf(amountTextField.getText());
+        if(amount > accountComboBox.getSelectionModel().getSelectedItem().getBalance()) {
+            errorLabel.setText("Kwota nie może być większa niż stan konta.");
+            return;
+        }
         TransactionService trnService = getTransactionService();
-        Account account = trnService.doPayment(accountNumber, amount, ClientAuth.getEncodedAuth());
+        Account account = trnService.doWithdrawal(accountNumber, amount, ClientAuth.getEncodedAuth());
         updateAccounts(account);
     }
 
@@ -117,7 +120,4 @@ public class PaymentController {
     private void resetLabels() {
         errorLabel.setText("");
     }
-
-
-
 }
