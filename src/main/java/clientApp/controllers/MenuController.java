@@ -57,8 +57,8 @@ public class MenuController {
     }
 
     @FXML
-    public void listenExternalTransferButton() {
-
+    public void listenExternalTransferButton() throws IOException {
+        openNewWindow("src/main/java/clientApp/layouts/externalTransfer.fxml", "Przelew zewnętrzny");
     }
 
     @FXML

@@ -18,8 +18,7 @@ import javax.jws.WebParam;
 import javax.jws.WebService;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Created by adam on 06.01.17.
@@ -96,14 +95,15 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
     @WebMethod
-    public void doExternalTransfer(@WebParam(name="sourceAccountNumber") String sourceAccountNumber,
-                                   @WebParam(name="targetAccountNumber") String targetAccountNumber,
-                                   @WebParam(name="title") String title,
-                                   @WebParam(name="amount") double amount,
-                                   @WebParam(name="encodedAuth") String encodedAuth) throws Exception {
+    public int doExternalTransfer(@WebParam(name="sourceAccountNumber") String sourceAccountNumber,
+                                                              @WebParam(name="targetAccountNumber") String targetAccountNumber,
+                                                              @WebParam(name="title") String title,
+                                                              @WebParam(name="amount") double amount,
+                                                              @WebParam(name="encodedAuth") String encodedAuth) throws Exception {
         User user = authTool.checkUserExistence(encodedAuth);
         Datastore datastore = DatabaseService.getDatastore();
         Account sourceAccount = findUserAccountByAccountNumber(user.getAccounts(), sourceAccountNumber);
+        int statusCode;
 
         if(amount > sourceAccount.getBalance()) {
             throw new Exception("The amount is greater than the available funds in your account");
@@ -127,11 +127,21 @@ public class TransactionServiceImpl implements TransactionService{
             postMethod.addParameter("receiver_account", targetAccountNumber);
             postMethod.addParameter("title", title);
             postMethod.addParameter("amount", prepareAmount(amount));
-            httpClient.executeMethod(postMethod);
+            statusCode = httpClient.executeMethod(postMethod);
             String output = postMethod.getResponseBodyAsString();
             postMethod.releaseConnection();
-            System.out.println("Output: " + output);
+            System.out.println("Output: " + statusCode);
+            sourceAccount.decreaseBalance(amount);
+            datastore.save(sourceAccount);
+            Transaction transaction = new Transaction(title,
+                    sourceAccountNumber,
+                    targetAccountNumber,
+                    sourceAccount.getBalance(),
+                    OperationType.ExternalTransfer,
+                    amount);
+            datastore.save(transaction);
         }
+        return statusCode;
 
     }
 
@@ -146,7 +156,7 @@ public class TransactionServiceImpl implements TransactionService{
 
     private String getReceiverUrl(String accountNumber) throws Exception {
         Properties properties = new Properties();
-        InputStream inputStream = new FileInputStream("addresses.properties");
+        InputStream inputStream = new FileInputStream("src/main/resources/addresses.properties");
         properties.load(inputStream);
         String index = accountNumber.substring(4, 10);
         String url = properties.getProperty(index);
@@ -158,7 +168,11 @@ public class TransactionServiceImpl implements TransactionService{
 
     private String prepareAmount(double amount) {
         String amountStr = Double.toString(amount);
-        amountStr = amountStr.replaceAll(".", "");
+        if(amountStr.contains(".") || amountStr.contains(",")) {
+            amountStr = amountStr.replaceAll(".", "");
+        } else  {
+            amountStr += "00";
+        }
         return amountStr;
     }
 

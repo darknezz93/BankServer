@@ -31,11 +31,11 @@ public interface TransactionService {
                                    @WebParam(name="encodedAuth") String encodedAuth) throws Exception;
 
     @WebMethod
-    public void doExternalTransfer(@WebParam(name="sourceAccountNumber") String sourceAccountNumber,
-                                   @WebParam(name="targetAccountNumber") String targetAccountNumber,
-                                   @WebParam(name="title") String title,
-                                   @WebParam(name="amount") double amount,
-                                   @WebParam(name="encodedAuth") String encodedAuth) throws Exception;
+    public int doExternalTransfer(@WebParam(name="sourceAccountNumber") String sourceAccountNumber,
+                                                              @WebParam(name="targetAccountNumber") String targetAccountNumber,
+                                                              @WebParam(name="title") String title,
+                                                              @WebParam(name="amount") double amount,
+                                                              @WebParam(name="encodedAuth") String encodedAuth) throws Exception;
 
 
 }
