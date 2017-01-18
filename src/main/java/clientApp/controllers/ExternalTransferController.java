@@ -91,13 +91,16 @@ public class ExternalTransferController {
             errorLabel.setText("Wybierz oba numery rachunków");
             return;
         }
+        if(receiverAccountTextField.getText().length() < 26) {
+            errorLabel.setText("Numer rachunku powinien skladac sie z 26 cyfr.");
+        }
         String senderAccountNumber = senderAccountComboBox.getSelectionModel().getSelectedItem().getAccountNumber();
         String receiverAccountNumber = receiverAccountTextField.getText();
         if (amountTextField.getText().equals("")) {
             errorLabel.setText("Wprowadź kwotę");
             return;
         }
-        double amount = Double.valueOf(amountTextField.getText());
+        int amount = Integer.valueOf(amountTextField.getText());
         if(amount > senderAccountComboBox.getSelectionModel().getSelectedItem().getBalance()) {
             errorLabel.setText("Kwota nie może być większa niż stan konta nadawcy.");
             return;
@@ -113,15 +116,22 @@ public class ExternalTransferController {
                 title,
                 amount,
                 ClientAuth.getEncodedAuth());
+        if(response == 401) {
+            errorLabel.setText("Brak autoryzacji uzytkownika");
+        }
         if(response == 201) {
             updateAccounts(senderAccountNumber, senderAccountComboBox.getValue().getBalance() - amount);
             successLabel.setText("Przelew zewnętrzny zakończony pozytywnie.");
         } else if(response == 400) {
             errorLabel.setText("Kwota musi być większa niż zero.");
         } else if(response == 404) {
-            errorLabel.setText("Numer rachunku odbiorcy nie istnieje");
+            errorLabel.setText("Numer rachunku odbiorcy nie istnieje.");
+        } else if(response == 403) {
+            errorLabel.setText("Numer rachunku odbiorcy nie moze znajdowac sie w tym samym banku.");
+        } else if(response == 409){
+            errorLabel.setText("Bank odbiorcy nie istnieje.");
         } else if(response == 500){
-            errorLabel.setText("Błąd serwera");
+            errorLabel.setText("Błąd serwera.");
         }
 
     }

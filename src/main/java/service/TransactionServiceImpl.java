@@ -7,18 +7,26 @@ import domain.User;
 import helper.AuthorizationTool;
 import operation.OperationType;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
+import org.json.JSONObject;
 import org.mongodb.morphia.Datastore;
 import service.rest.RestAuthenticationFilter;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import javax.ws.rs.core.Response;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.*;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by adam on 06.01.17.
@@ -43,6 +51,13 @@ public class TransactionServiceImpl implements TransactionService{
         }
         account.increaseBalance(amount);
         datastore.save(account);
+        Transaction transaction = new Transaction("Wplata na konto",
+                accountNumber,
+                accountNumber,
+                account.getBalance(),
+                OperationType.Payment,
+                amount);
+        datastore.save(transaction);
         return account;
     }
 
@@ -60,6 +75,13 @@ public class TransactionServiceImpl implements TransactionService{
         } else {
             account.decreaseBalance(amount);
             datastore.save(account);
+            Transaction transaction = new Transaction("Wyplata z konta",
+                    accountNumber,
+                    accountNumber,
+                    account.getBalance(),
+                    OperationType.Withdrawal,
+                    amount);
+            datastore.save(transaction);
         }
         return account;
     }
@@ -104,6 +126,8 @@ public class TransactionServiceImpl implements TransactionService{
         Datastore datastore = DatabaseService.getDatastore();
         Account sourceAccount = findUserAccountByAccountNumber(user.getAccounts(), sourceAccountNumber);
         int statusCode;
+        JSONObject json = new JSONObject();
+        HttpResponse response;
 
         if(amount > sourceAccount.getBalance()) {
             throw new Exception("The amount is greater than the available funds in your account");
@@ -111,26 +135,27 @@ public class TransactionServiceImpl implements TransactionService{
             throw new Exception("The amount can not be less than 0.");
         } else {
             String url = getReceiverUrl(targetAccountNumber);
+            if(url == null) {
+                return Response.Status.CONFLICT.getStatusCode();
+            }
             url += "/transfer";
-            HttpClient httpClient = new HttpClient();
-            PostMethod postMethod = new PostMethod(url);
+
             byte[] bytesAuth = Base64.encodeBase64((RestAuthenticationFilter.USERNAME + ":" + RestAuthenticationFilter.PASSWORD).getBytes());
             String encodedString = new String(bytesAuth);
-            Header mtHeader = new Header();
-            mtHeader.setName("content-type");
-            mtHeader.setValue("application/x-www-form-urlencoded");
-            mtHeader.setName("accept");
-            mtHeader.setValue("application/json");
-            mtHeader.setName("Authorization");
-            mtHeader.setValue("Basic " + encodedString);
-            postMethod.addParameter("sender_account", sourceAccountNumber);
-            postMethod.addParameter("receiver_account", targetAccountNumber);
-            postMethod.addParameter("title", title);
-            postMethod.addParameter("amount", prepareAmount(amount));
-            statusCode = httpClient.executeMethod(postMethod);
-            String output = postMethod.getResponseBodyAsString();
-            postMethod.releaseConnection();
-            System.out.println("Output: " + statusCode);
+
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpPost post = new HttpPost(url);
+            json.put("sender_account", sourceAccountNumber);
+            json.put("receiver_account", targetAccountNumber);
+            json.put("title", title);
+            json.put("amount", prepareAmount(amount));
+            StringEntity se = new StringEntity(json.toString());
+            se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+            post.setEntity(se);
+            Header mtHeader = new BasicHeader("Authorization", "Basic " + encodedString);
+            post.setHeader(mtHeader);
+            response = httpClient.execute(post);
+            statusCode = response.getStatusLine().getStatusCode();
             sourceAccount.decreaseBalance(amount);
             datastore.save(sourceAccount);
             Transaction transaction = new Transaction(title,
@@ -160,16 +185,14 @@ public class TransactionServiceImpl implements TransactionService{
         properties.load(inputStream);
         String index = accountNumber.substring(4, 10);
         String url = properties.getProperty(index);
-        if(url == null) {
-            throw new Exception("Receiver bank does not exists.");
-        }
         return url;
     }
 
     private String prepareAmount(double amount) {
         String amountStr = Double.toString(amount);
         if(amountStr.contains(".") || amountStr.contains(",")) {
-            amountStr = amountStr.replaceAll(".", "");
+            amountStr = amountStr.replace(".", "");
+            amountStr += "0";
         } else  {
             amountStr += "00";
         }

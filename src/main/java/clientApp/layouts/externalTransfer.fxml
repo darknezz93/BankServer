@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import clientApp.helper.AmountTextField?>
 <?import clientApp.helper.AccountNumberTextField?>
+<?import clientApp.helper.AmountTextField?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -10,7 +10,6 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
-
 
 <GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientApp.controllers.ExternalTransferController">
     <columnConstraints>
@@ -34,7 +33,7 @@
                 <AccountNumberTextField fx:id="receiverAccountTextField" layoutX="131.0" layoutY="173.0" prefHeight="26.0" prefWidth="298.0" />
                 <Label layoutX="14.0" layoutY="234.0" text="Tytuł przelewu" />
                 <TextField fx:id="titleTextField" layoutX="131.0" layoutY="229.0" prefHeight="26.0" prefWidth="298.0" />
-                <Label fx:id="successLabel" layoutX="26.0" layoutY="14.0" prefHeight="16.0" prefWidth="398.0" textFill="#15fc5e" />
+                <Label fx:id="successLabel" layoutX="25.0" layoutY="6.0" prefHeight="26.0" prefWidth="398.0" textFill="#15fc5e" />
             </children>
         </Pane>
     </children>

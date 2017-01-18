@@ -28,24 +28,32 @@ public class Rest {
     @Produces({"application/json"})
     public Response doExternalTransfer(RestObject restObject) throws Exception {
         System.out.println("Rest");
+        if(restObject.getAmount() == 0 ||
+                restObject.getReceiver_account() == null ||
+                restObject.getSender_account() == null ||
+                restObject.getTitle() == null) {
+            JSONObject json = new JSONObject();
+            json.put("error", "JSON format error.");
+            return Response.status(Response.Status.BAD_REQUEST).entity(json.toString()).build();
+        }
         double amount = convertToDouble(restObject.getAmount());
         Transaction transaction = new Transaction(restObject.getTitle(),
                 restObject.getSender_account(),
                 restObject.getReceiver_account(),
                 OperationType.ExternalTransfer,
                 amount);
-
-        if(amount < 0) {
-            JSONObject json = new JSONObject();
-            json.put("error", "Amount value must be > 0");
-            return Response.status(Response.Status.BAD_REQUEST).entity(json.toString()).build();
-        }
         Datastore datastore = DatabaseService.getDatastore();
+        Account accountSrc = DatabaseService.findAccountByAccountNumber(datastore, transaction.getSourceAccountNumber());
         Account account = DatabaseService.findAccountByAccountNumber(datastore, transaction.getTargetAccountNumber());
         if(account == null) {
             JSONObject json = new JSONObject();
-            json.put("error", "Target account does not exists");
+            json.put("error", "Target account does not exists.");
             return Response.status(Response.Status.NOT_FOUND).entity(json.toString()).build();
+        }
+        if(accountSrc != null) {
+            JSONObject json = new JSONObject();
+            json.put("error", "Target account cannot be located in the same bank.");
+            return Response.status(Response.Status.FORBIDDEN).entity(json.toString()).build();
         }
         account.increaseBalance(amount);
         datastore.save(account);
