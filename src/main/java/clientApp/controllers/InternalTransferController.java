@@ -60,6 +60,7 @@ public class InternalTransferController {
         AccountService accountService = getAccountService();
         senderAccounts = accountService.getAccounts(ClientAuth.getEncodedAuth());
         receiverAccounts = accountService.getOtherAccounts(ClientAuth.getEncodedAuth());
+        receiverAccounts.addAll(senderAccounts);
         initializeSenderAccountComboBox();
         initializeReceiverAccountComboBox();
 
@@ -82,7 +83,9 @@ public class InternalTransferController {
         senderAccountComboBox.valueProperty().addListener(new ChangeListener<Account>() {
             @Override
             public void changed(ObservableValue<? extends Account> observable, Account oldValue, Account newValue) {
-                balanceLabel.setText(String.valueOf(newValue.getBalance()));
+                if(newValue != null) {
+                    balanceLabel.setText(String.valueOf(newValue.getBalance()));
+                }
             }
         });
     }
@@ -111,6 +114,11 @@ public class InternalTransferController {
             errorLabel.setText("Wybierz oba numery rachunków");
             return;
         }
+        if(senderAccountComboBox.getSelectionModel().getSelectedItem() ==
+                receiverAccountComboBox.getSelectionModel().getSelectedItem()) {
+            errorLabel.setText("Wybierz dwa rozne rachunki");
+            return;
+        }
         String senderAccountNumber = senderAccountComboBox.getSelectionModel().getSelectedItem().getAccountNumber();
         String receiverAccountNumber = receiverAccountComboBox.getSelectionModel().getSelectedItem().getAccountNumber();
         if (amountTextField.getText().equals("")) {
@@ -133,8 +141,9 @@ public class InternalTransferController {
                 title,
                 amount,
                 ClientAuth.getEncodedAuth());
-        updateAccounts(account);
+        //updateAccounts(account);
         successLabel.setText("Przelew wewnątrzbankowy zakończony pozytywnie.");
+        refreshComboBoxes(amount);
     }
 
     private AccountService getAccountService() throws MalformedURLException {
@@ -161,6 +170,20 @@ public class InternalTransferController {
         Service service = Service.create(url, qname);
         TransactionService webService = service.getPort(TransactionService.class);
         return webService;
+    }
+
+    private void refreshComboBoxes(double amount) throws MalformedURLException {
+        AccountService accountService = getAccountService();
+        Account senderAcc = senderAccountComboBox.getSelectionModel().getSelectedItem();
+        Account receiverAcc = receiverAccountComboBox.getSelectionModel().getSelectedItem();
+        senderAccounts = accountService.getAccounts(ClientAuth.getEncodedAuth());
+        receiverAccounts = accountService.getOtherAccounts(ClientAuth.getEncodedAuth());
+        receiverAccounts.addAll(senderAccounts);
+        senderAccountComboBox.setItems(FXCollections.observableArrayList(senderAccounts));
+        receiverAccountComboBox.setItems(FXCollections.observableArrayList(receiverAccounts));
+        senderAccountComboBox.getSelectionModel().select(senderAcc);
+        receiverAccountComboBox.getSelectionModel().select(receiverAcc);
+        balanceLabel.setText(String.valueOf(senderAcc.getBalance()-amount));
     }
 
     private void resetLabels() {

@@ -5,6 +5,7 @@ import operation.OperationType;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.Reference;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -18,7 +19,7 @@ public class Transaction {
 
     @Id
     @XmlJavaTypeAdapter(ObjectIdJaxAdapter.class)
-    private ObjectId id;
+    private ObjectId identifier;
 
     @NotNull
     private String title;
@@ -38,14 +39,18 @@ public class Transaction {
     @NotNull
     private double amount;
 
+    @Reference
+    private User user;
+
     public Transaction() {}
 
     public Transaction(String title,
                        String sourceAccountNumber,
                        String targetAccountNumber,
                        OperationType operationType,
-                       double amount) {
-       this(title, sourceAccountNumber, targetAccountNumber, 0, operationType, amount);
+                       double amount,
+                       User user) {
+       this(title, sourceAccountNumber, targetAccountNumber, 0, operationType, amount, user);
     }
 
     public Transaction(String title,
@@ -53,21 +58,15 @@ public class Transaction {
                        String targetAccountNumber,
                        double balance,
                        OperationType operationType,
-                       double amount) {
+                       double amount,
+                       User user) {
         this.title = title;
         this.sourceAccountNumber = sourceAccountNumber;
         this.targetAccountNumber = targetAccountNumber;
         this.balance = balance;
         this.operationType = operationType;
         this.amount = amount;
-    }
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
+        this.user = user;
     }
 
     public String getTitle() {
@@ -116,5 +115,9 @@ public class Transaction {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientApp.controllers.TransactionHistoryController">
+    <columnConstraints>
+        <ColumnConstraints />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints />
+    </rowConstraints>
+    <children>
+        <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="359.0" prefWidth="874.0" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1">
+         <children>
+            <TableView fx:id="tableView" layoutX="14.0" layoutY="14.0" prefHeight="334.0" prefWidth="853.0">
+              <columns>
+                <TableColumn fx:id="titleColumn" prefWidth="85.0" text="Tytul" />
+                <TableColumn fx:id="senderAccountColumn" prefWidth="185.0" text="Rachunek nadawcy" />
+                <TableColumn fx:id="receiverAccountColumn" prefWidth="185.0" text="Rachunek odbiorcy" />
+                <TableColumn fx:id="amountColumn" prefWidth="120.0" text="Kwota" />
+                <TableColumn fx:id="operationTypeColumn" prefWidth="150.0" text="Rodzaj operacji" />
+                <TableColumn fx:id="balanceColumn" prefWidth="130.0" text="Stan konta" />
+              </columns>
+            </TableView>
+         </children>
+        </Pane>
+    </children>
+</GridPane>

@@ -1,10 +1,12 @@
 package service;
 
 import domain.Account;
+import domain.Transaction;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import java.util.List;
 
 /**
  * Created by adam on 16.01.17.
@@ -36,6 +38,9 @@ public interface TransactionService {
                                                               @WebParam(name="title") String title,
                                                               @WebParam(name="amount") double amount,
                                                               @WebParam(name="encodedAuth") String encodedAuth) throws Exception;
+
+    @WebMethod
+    public List<Transaction> getTransactions(@WebParam(name="encodedAuth") String encodedAuth);
 
 
 }

@@ -3,6 +3,7 @@ package service.rest;
 import database.DatabaseService;
 import domain.Account;
 import domain.Transaction;
+import domain.User;
 import operation.OperationType;
 import org.json.JSONObject;
 import org.mongodb.morphia.Datastore;
@@ -37,14 +38,9 @@ public class Rest {
             return Response.status(Response.Status.BAD_REQUEST).entity(json.toString()).build();
         }
         double amount = convertToDouble(restObject.getAmount());
-        Transaction transaction = new Transaction(restObject.getTitle(),
-                restObject.getSender_account(),
-                restObject.getReceiver_account(),
-                OperationType.ExternalTransfer,
-                amount);
         Datastore datastore = DatabaseService.getDatastore();
-        Account accountSrc = DatabaseService.findAccountByAccountNumber(datastore, transaction.getSourceAccountNumber());
-        Account account = DatabaseService.findAccountByAccountNumber(datastore, transaction.getTargetAccountNumber());
+        Account accountSrc = DatabaseService.findAccountByAccountNumber(datastore, restObject.getSender_account());
+        Account account = DatabaseService.findAccountByAccountNumber(datastore, restObject.getReceiver_account());
         if(account == null) {
             JSONObject json = new JSONObject();
             json.put("error", "Target account does not exists.");
@@ -57,6 +53,13 @@ public class Rest {
         }
         account.increaseBalance(amount);
         datastore.save(account);
+        User user = findUserByAccountNumber(restObject.getReceiver_account());
+        Transaction transaction = new Transaction(restObject.getTitle(),
+                restObject.getSender_account(),
+                restObject.getReceiver_account(),
+                OperationType.ExternalTransfer,
+                amount,
+                user);
         datastore.save(transaction);
         return Response.status(201).entity(transaction).build();
     }
@@ -66,6 +69,12 @@ public class Rest {
         String amountStr = Integer.toString(amount);
         amountStr = amountStr.substring(0, amountStr.length() - 2) + "." + amountStr.substring(amountStr.length() - 2, amountStr.length());
         return Double.parseDouble(amountStr);
+    }
+
+    private User findUserByAccountNumber(String accountNumber) throws Exception {
+        Datastore datastore = DatabaseService.getDatastore();
+        User user = datastore.createQuery(User.class).field("accounts").contains(accountNumber).get();
+        return user;
     }
 
 

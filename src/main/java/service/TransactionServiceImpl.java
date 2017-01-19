@@ -56,7 +56,8 @@ public class TransactionServiceImpl implements TransactionService{
                 accountNumber,
                 account.getBalance(),
                 OperationType.Payment,
-                amount);
+                amount,
+                user);
         datastore.save(transaction);
         return account;
     }
@@ -80,7 +81,8 @@ public class TransactionServiceImpl implements TransactionService{
                     accountNumber,
                     account.getBalance(),
                     OperationType.Withdrawal,
-                    amount);
+                    amount,
+                    user);
             datastore.save(transaction);
         }
         return account;
@@ -110,7 +112,8 @@ public class TransactionServiceImpl implements TransactionService{
                     targetAccountNumber,
                     sourceAccount.getBalance(),
                     OperationType.InternalTransfer,
-                    amount);
+                    amount,
+                    user);
             datastore.save(transaction);
             return sourceAccount;
         }
@@ -163,11 +166,19 @@ public class TransactionServiceImpl implements TransactionService{
                     targetAccountNumber,
                     sourceAccount.getBalance(),
                     OperationType.ExternalTransfer,
-                    amount);
+                    amount,
+                    user);
             datastore.save(transaction);
         }
         return statusCode;
+    }
 
+    @WebMethod
+    public List<Transaction> getTransactions(@WebParam(name="encodedAuth") String encodedAuth) {
+        User user = authTool.checkUserExistence(encodedAuth);
+        Datastore datastore = DatabaseService.getDatastore();
+        List<Transaction> transactions = datastore.createQuery(Transaction.class).field("user").equal(user).asList();
+        return transactions;
     }
 
 

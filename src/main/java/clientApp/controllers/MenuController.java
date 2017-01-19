@@ -62,8 +62,8 @@ public class MenuController {
     }
 
     @FXML
-    public void listenOperationHistoryButton() {
-
+    public void listenOperationHistoryButton() throws IOException {
+        openNewWindow("src/main/java/clientApp/layouts/transactionHistory.fxml", "Historia operacji");
     }
 
     @FXML

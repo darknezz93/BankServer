@@ -78,7 +78,9 @@ public class ExternalTransferController {
         senderAccountComboBox.valueProperty().addListener(new ChangeListener<Account>() {
             @Override
             public void changed(ObservableValue<? extends Account> observable, Account oldValue, Account newValue) {
-                balanceLabel.setText(String.valueOf(newValue.getBalance()));
+                if(newValue != null) {
+                    balanceLabel.setText(String.valueOf(newValue.getBalance()));
+                }
             }
         });
     }
@@ -120,7 +122,8 @@ public class ExternalTransferController {
             errorLabel.setText("Brak autoryzacji uzytkownika");
         }
         if(response == 201) {
-            updateAccounts(senderAccountNumber, senderAccountComboBox.getValue().getBalance() - amount);
+            //updateAccounts(senderAccountNumber, senderAccountComboBox.getValue().getBalance() - amount);
+            refreshComboBoxes(amount);
             successLabel.setText("Przelew zewnętrzny zakończony pozytywnie.");
         } else if(response == 400) {
             errorLabel.setText("Kwota musi być większa niż zero.");
@@ -133,7 +136,6 @@ public class ExternalTransferController {
         } else if(response == 500){
             errorLabel.setText("Błąd serwera.");
         }
-
     }
 
     private AccountService getAccountService() throws MalformedURLException {
@@ -160,6 +162,15 @@ public class ExternalTransferController {
         Service service = Service.create(url, qname);
         TransactionService webService = service.getPort(TransactionService.class);
         return webService;
+    }
+
+    private void refreshComboBoxes(double amount) throws MalformedURLException {
+        AccountService accountService = getAccountService();
+        senderAccounts = accountService.getAccounts(ClientAuth.getEncodedAuth());
+        Account senderAcc = senderAccountComboBox.getSelectionModel().getSelectedItem();
+        senderAccountComboBox.setItems(FXCollections.observableArrayList(senderAccounts));
+        senderAccountComboBox.getSelectionModel().select(senderAcc);
+        balanceLabel.setText(String.valueOf(senderAcc.getBalance() - amount));
     }
 
     private void resetLabels() {
