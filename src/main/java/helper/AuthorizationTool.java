@@ -18,9 +18,11 @@ public class AuthorizationTool {
         final StringTokenizer tokenizer = new StringTokenizer(usernameAndPassword, ":");
         final String userName = tokenizer.nextToken();
         final String password = tokenizer.nextToken();
+        byte[] bytesEncodedPass = org.apache.commons.codec.binary.Base64.encodeBase64(password.getBytes());
+        String encodedPassword = new String(bytesEncodedPass);
         Datastore datastore = DatabaseService.getDatastore();
 
-        User user = datastore.find(User.class).field("userName").equal(userName).field("password").equal(password).get();
+        User user = datastore.find(User.class).field("userName").equal(userName).field("password").equal(encodedPassword).get();
         if(user == null) {
             throw new AuthenticationException("Username or password invalid.");
         }

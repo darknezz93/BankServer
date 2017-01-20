@@ -64,7 +64,9 @@ public class PaymentController {
         accountComboBox.valueProperty().addListener(new ChangeListener<Account>() {
             @Override
             public void changed(ObservableValue<? extends Account> observable, Account oldValue, Account newValue) {
-                balanceLabel.setText(String.valueOf(newValue.getBalance()));
+                if(newValue != null) {
+                    balanceLabel.setText(String.valueOf(newValue.getBalance()));
+                }
             }
         });
     }
@@ -85,7 +87,8 @@ public class PaymentController {
         double amount = Double.valueOf(amountTextField.getText());
         TransactionService trnService = getTransactionService();
         Account account = trnService.doPayment(accountNumber, amount, ClientAuth.getEncodedAuth());
-        updateAccounts(account);
+        //updateAccounts(account);
+        refreshComboBoxes(amount);
     }
 
     private AccountService getAccountService() throws MalformedURLException {
@@ -101,10 +104,22 @@ public class PaymentController {
             if(account.getAccountNumber().equals(acc.getAccountNumber())) {
                 acc = account;
                 balanceLabel.setText(String.valueOf(acc.getBalance()));
+                accountComboBox.setItems(FXCollections.observableArrayList(accounts));
+                accountComboBox.setValue(acc);
                 return;
             }
         }
     }
+
+    private void refreshComboBoxes(double amount) throws MalformedURLException {
+        AccountService accountService = getAccountService();
+        accounts = accountService.getAccounts(ClientAuth.getEncodedAuth());
+        Account senderAcc = accountComboBox.getSelectionModel().getSelectedItem();
+        accountComboBox.setItems(FXCollections.observableArrayList(accounts));
+        accountComboBox.getSelectionModel().select(senderAcc);
+        balanceLabel.setText(String.valueOf(senderAcc.getBalance() + amount));
+    }
+
 
     private TransactionService getTransactionService() throws MalformedURLException {
         URL url = new URL("http://localhost:8000/transaction?wsdl");

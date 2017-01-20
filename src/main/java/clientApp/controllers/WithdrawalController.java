@@ -63,7 +63,9 @@ public class WithdrawalController {
         accountComboBox.valueProperty().addListener(new ChangeListener<Account>() {
             @Override
             public void changed(ObservableValue<? extends Account> observable, Account oldValue, Account newValue) {
-                balanceLabel.setText(String.valueOf(newValue.getBalance()));
+                if(newValue != null) {
+                    balanceLabel.setText(String.valueOf(newValue.getBalance()));
+                }
             }
         });
     }
@@ -88,7 +90,8 @@ public class WithdrawalController {
         }
         TransactionService trnService = getTransactionService();
         Account account = trnService.doWithdrawal(accountNumber, amount, ClientAuth.getEncodedAuth());
-        updateAccounts(account);
+        refreshComboBoxes(amount);
+        //updateAccounts(account);
     }
 
     private AccountService getAccountService() throws MalformedURLException {
@@ -99,11 +102,22 @@ public class WithdrawalController {
         return webService;
     }
 
+    private void refreshComboBoxes(double amount) throws MalformedURLException {
+        AccountService accountService = getAccountService();
+        accounts = accountService.getAccounts(ClientAuth.getEncodedAuth());
+        Account senderAcc = accountComboBox.getSelectionModel().getSelectedItem();
+        accountComboBox.setItems(FXCollections.observableArrayList(accounts));
+        accountComboBox.getSelectionModel().select(senderAcc);
+        balanceLabel.setText(String.valueOf(senderAcc.getBalance() - amount));
+    }
+
     private void updateAccounts(Account account) {
         for(Account acc : accounts) {
             if(account.getAccountNumber().equals(acc.getAccountNumber())) {
                 acc = account;
                 balanceLabel.setText(String.valueOf(acc.getBalance()));
+                accountComboBox.setItems(FXCollections.observableArrayList(accounts));
+                accountComboBox.setValue(acc);
                 return;
             }
         }

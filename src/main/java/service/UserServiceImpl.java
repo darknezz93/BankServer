@@ -29,7 +29,9 @@ public class UserServiceImpl implements UserService {
             final StringTokenizer tokenizer = new StringTokenizer(usernameAndPassword, ":");
             final String userName = tokenizer.nextToken();
             final String password = tokenizer.nextToken();
-            User user = new User(userName, password);
+            byte[] bytesEncodedPass = org.apache.commons.codec.binary.Base64.encodeBase64(password.getBytes());
+            String encodedPassword = new String(bytesEncodedPass);
+            User user = new User(userName, encodedPassword);
             User userFromDb = datastore.createQuery(User.class).field("userName").equal(userName).get();
             if(userFromDb != null) {
                 //throw new Exception("User already exists");

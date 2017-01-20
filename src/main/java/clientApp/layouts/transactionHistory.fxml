@@ -15,16 +15,16 @@
         <RowConstraints />
     </rowConstraints>
     <children>
-        <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="359.0" prefWidth="874.0" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1">
+        <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="359.0" prefWidth="1004.0" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1">
          <children>
-            <TableView fx:id="tableView" layoutX="14.0" layoutY="14.0" prefHeight="334.0" prefWidth="853.0">
+            <TableView fx:id="tableView" layoutX="14.0" layoutY="14.0" prefHeight="334.0" prefWidth="983.0">
               <columns>
-                <TableColumn fx:id="titleColumn" prefWidth="85.0" text="Tytul" />
-                <TableColumn fx:id="senderAccountColumn" prefWidth="185.0" text="Rachunek nadawcy" />
-                <TableColumn fx:id="receiverAccountColumn" prefWidth="185.0" text="Rachunek odbiorcy" />
+                <TableColumn fx:id="titleColumn" prefWidth="115.0" text="Tytul" />
+                <TableColumn fx:id="senderAccountColumn" prefWidth="225.0" text="Rachunek nadawcy" />
+                <TableColumn fx:id="receiverAccountColumn" prefWidth="225.0" text="Rachunek odbiorcy" />
                 <TableColumn fx:id="amountColumn" prefWidth="120.0" text="Kwota" />
-                <TableColumn fx:id="operationTypeColumn" prefWidth="150.0" text="Rodzaj operacji" />
-                <TableColumn fx:id="balanceColumn" prefWidth="130.0" text="Stan konta" />
+                <TableColumn fx:id="operationTypeColumn" prefWidth="160.0" text="Rodzaj operacji" />
+                <TableColumn fx:id="balanceColumn" prefWidth="140.0" text="Stan konta" />
               </columns>
             </TableView>
          </children>

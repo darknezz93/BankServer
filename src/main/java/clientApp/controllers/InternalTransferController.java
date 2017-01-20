@@ -59,7 +59,7 @@ public class InternalTransferController {
     public void initialize() throws MalformedURLException {
         AccountService accountService = getAccountService();
         senderAccounts = accountService.getAccounts(ClientAuth.getEncodedAuth());
-        receiverAccounts = accountService.getOtherAccounts(ClientAuth.getEncodedAuth());
+        //receiverAccounts = accountService.getOtherAccounts(ClientAuth.getEncodedAuth());
         receiverAccounts.addAll(senderAccounts);
         initializeSenderAccountComboBox();
         initializeReceiverAccountComboBox();
@@ -114,8 +114,8 @@ public class InternalTransferController {
             errorLabel.setText("Wybierz oba numery rachunków");
             return;
         }
-        if(senderAccountComboBox.getSelectionModel().getSelectedItem() ==
-                receiverAccountComboBox.getSelectionModel().getSelectedItem()) {
+        if(senderAccountComboBox.getSelectionModel().getSelectedItem().getAccountNumber()
+                .equals(receiverAccountComboBox.getSelectionModel().getSelectedItem().getAccountNumber())) {
             errorLabel.setText("Wybierz dwa rozne rachunki");
             return;
         }
@@ -177,8 +177,8 @@ public class InternalTransferController {
         Account senderAcc = senderAccountComboBox.getSelectionModel().getSelectedItem();
         Account receiverAcc = receiverAccountComboBox.getSelectionModel().getSelectedItem();
         senderAccounts = accountService.getAccounts(ClientAuth.getEncodedAuth());
-        receiverAccounts = accountService.getOtherAccounts(ClientAuth.getEncodedAuth());
-        receiverAccounts.addAll(senderAccounts);
+        //receiverAccounts = accountService.getOtherAccounts(ClientAuth.getEncodedAuth());
+        receiverAccounts = senderAccounts;
         senderAccountComboBox.setItems(FXCollections.observableArrayList(senderAccounts));
         receiverAccountComboBox.setItems(FXCollections.observableArrayList(receiverAccounts));
         senderAccountComboBox.getSelectionModel().select(senderAcc);
@@ -188,5 +188,6 @@ public class InternalTransferController {
 
     private void resetLabels() {
         errorLabel.setText("");
+        successLabel.setText("");
     }
 }

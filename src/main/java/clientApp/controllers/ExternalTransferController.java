@@ -93,8 +93,15 @@ public class ExternalTransferController {
             errorLabel.setText("Wybierz oba numery rachunków");
             return;
         }
+        if(senderAccountComboBox.getSelectionModel().getSelectedItem().getAccountNumber()
+                .equals(receiverAccountTextField.getText())) {
+            errorLabel.setText("Rachunek odbiorcy powinien znajdować się w innym banku");
+            return;
+
+        }
         if(receiverAccountTextField.getText().length() < 26) {
             errorLabel.setText("Numer rachunku powinien skladac sie z 26 cyfr.");
+            return;
         }
         String senderAccountNumber = senderAccountComboBox.getSelectionModel().getSelectedItem().getAccountNumber();
         String receiverAccountNumber = receiverAccountTextField.getText();
@@ -130,7 +137,7 @@ public class ExternalTransferController {
         } else if(response == 404) {
             errorLabel.setText("Numer rachunku odbiorcy nie istnieje.");
         } else if(response == 403) {
-            errorLabel.setText("Numer rachunku odbiorcy nie moze znajdowac sie w tym samym banku.");
+            errorLabel.setText("Numer rachunku odbiorcy musi znajdować się w innym banku");
         } else if(response == 409){
             errorLabel.setText("Bank odbiorcy nie istnieje.");
         } else if(response == 500){
@@ -175,5 +182,6 @@ public class ExternalTransferController {
 
     private void resetLabels() {
         errorLabel.setText("");
+        successLabel.setText("");
     }
 }
