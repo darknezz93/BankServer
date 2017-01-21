@@ -16,6 +16,9 @@ import java.util.List;
  * Created by adam on 06.01.17.
  */
 
+/**
+ * Klasa domenowa dla użytkownika
+ */
 @Entity
 @XmlRootElement
 public class User {
@@ -53,27 +56,8 @@ public class User {
         this.id = id;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public List<Account> getAccounts() {
         return accounts;
     }
 
-    public void setAccounts(List<Account> accounts) {
-        this.accounts = accounts;
-    }
 }

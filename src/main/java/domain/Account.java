@@ -10,6 +10,9 @@ import javax.validation.constraints.NotNull;
  * Created by adam on 06.01.17.
  */
 
+/**
+ * Klasa domenowa dla Rachunku
+ */
 @Entity
 public class Account {
 
@@ -45,6 +48,10 @@ public class Account {
         this.balance = balance;
     }
 
+    /**
+     * Zwiększa saldo
+     * @param amount
+     */
     public void increaseBalance(double amount) {
         if(amount > 0) {
             balance += amount;
@@ -53,6 +60,10 @@ public class Account {
         }
     }
 
+    /**
+     * Zmniejsza saldo
+     * @param amount
+     */
     public void decreaseBalance(double amount) {
         if(amount > 0) {
             balance -= amount;

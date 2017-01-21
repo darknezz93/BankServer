@@ -7,6 +7,10 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 /**
  * Created by adam on 07.01.17.
  */
+
+/**
+ * Klasa serializująca i deserializująca id
+ */
 public class ObjectIdJaxAdapter extends XmlAdapter<String, ObjectId> {
 
     @Override

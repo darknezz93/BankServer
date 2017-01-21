@@ -25,6 +25,10 @@ import java.util.List;
 /**
  * Created by adam on 16.01.17.
  */
+
+/**
+ * Kontroler odpowiedzialny za okno wpłat własnych
+ */
 public class PaymentController {
 
     @FXML
@@ -44,6 +48,10 @@ public class PaymentController {
 
     private List<Account> accounts = new ArrayList<>();
 
+    /**
+     * Metoda inicjalizująca dane. Wywoływana po utworzeniu okna
+     * @throws MalformedURLException
+     */
     @FXML
     public void initialize() throws MalformedURLException {
         AccountService accountService = getAccountService();
@@ -71,7 +79,10 @@ public class PaymentController {
         });
     }
 
-
+    /**
+     * Metoda wywoływana po naciśnięciu przycisku "Wpłać"
+     * @throws Exception
+     */
     @FXML
     public void listenPaymentButton() throws Exception {
         resetLabels();
@@ -91,6 +102,11 @@ public class PaymentController {
         refreshComboBoxes(amount);
     }
 
+    /**
+     * Zwraca accountService
+     * @return
+     * @throws MalformedURLException
+     */
     private AccountService getAccountService() throws MalformedURLException {
         URL url = new URL("http://localhost:8000/account?wsdl");
         QName qname = new QName("http://service/", "AccountServiceImplService");
@@ -99,18 +115,24 @@ public class PaymentController {
         return webService;
     }
 
-    private void updateAccounts(Account account) {
-        for(Account acc : accounts) {
-            if(account.getAccountNumber().equals(acc.getAccountNumber())) {
-                acc = account;
-                balanceLabel.setText(String.valueOf(acc.getBalance()));
-                accountComboBox.setItems(FXCollections.observableArrayList(accounts));
-                accountComboBox.setValue(acc);
-                return;
-            }
-        }
+    /**
+     * Zwraca transactionService
+     * @return
+     * @throws MalformedURLException
+     */
+    private TransactionService getTransactionService() throws MalformedURLException {
+        URL url = new URL("http://localhost:8000/transaction?wsdl");
+        QName qname = new QName("http://service/", "TransactionServiceImplService");
+        Service service = Service.create(url, qname);
+        TransactionService webService = service.getPort(TransactionService.class);
+        return webService;
     }
 
+    /**
+     * Odświeża zawartość comboBoxa
+     * @param amount
+     * @throws MalformedURLException
+     */
     private void refreshComboBoxes(double amount) throws MalformedURLException {
         AccountService accountService = getAccountService();
         accounts = accountService.getAccounts(ClientAuth.getEncodedAuth());
@@ -120,15 +142,9 @@ public class PaymentController {
         balanceLabel.setText(String.valueOf(senderAcc.getBalance() + amount));
     }
 
-
-    private TransactionService getTransactionService() throws MalformedURLException {
-        URL url = new URL("http://localhost:8000/transaction?wsdl");
-        QName qname = new QName("http://service/", "TransactionServiceImplService");
-        Service service = Service.create(url, qname);
-        TransactionService webService = service.getPort(TransactionService.class);
-        return webService;
-    }
-
+    /**
+     * Resetuje labelkę z błędami
+     */
     private void resetLabels() {
         errorLabel.setText("");
     }

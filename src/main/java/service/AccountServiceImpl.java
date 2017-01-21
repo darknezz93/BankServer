@@ -5,7 +5,6 @@ import domain.Account;
 import domain.User;
 import helper.AuthorizationTool;
 import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.query.Query;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -13,12 +12,14 @@ import javax.jws.WebService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by adam on 06.01.17.
  */
 
+/**
+ * Klasa odpowiedzalna ze pełnienie roli serwisu usług dotyczących rachunków
+ */
 @WebService(endpointInterface = "service.AccountService")
 public class AccountServiceImpl implements AccountService{
 
@@ -26,6 +27,11 @@ public class AccountServiceImpl implements AccountService{
 
     private static final String BANK_NUMBER = "00109683";
 
+    /**
+     * Dodaje nowe konto
+     * @param encodedAuth
+     * @return
+     */
     @WebMethod
     public Account addAccount(@WebParam(name="encodedAuth") String encodedAuth) {
         System.out.println("Adding new account.");
@@ -38,7 +44,11 @@ public class AccountServiceImpl implements AccountService{
         return account;
     }
 
-
+    /**
+     * Pobiera konta użytkownika
+     * @param encodedAuth
+     * @return
+     */
     @WebMethod
     public List<Account> getAccounts(@WebParam(name="encodedAuth") String encodedAuth) {
         System.out.println("Getting user accounts.");
@@ -46,20 +56,11 @@ public class AccountServiceImpl implements AccountService{
         return user.getAccounts();
     }
 
-    @WebMethod
-    public List<Account> getOtherAccounts(@WebParam(name="encodedAuth") String encodedAuth) {
-        System.out.println("Getting user accounts.");
-        User user = authTool.checkUserExistence(encodedAuth);
-        Datastore datastore = DatabaseService.getDatastore();
-        Query<Account> q = datastore.createQuery(Account.class);
-        q.or(
-                q.criteria("accountNumber").
-                        notIn(user.getAccounts().stream().map(acc -> acc.getAccountNumber()).collect(Collectors.toList()))
-        );
-        List<Account> accounts = q.asList();
-        return accounts;
-    }
-
+    /**
+     * Tworzy nowy rachunek bankowy
+     * @param datastore
+     * @return
+     */
     private String generateAccountNumber(Datastore datastore) {
         String accountNumber = generateCheckSum() + BANK_NUMBER;
         List<Account> accounts = datastore.find(Account.class).asList();
@@ -76,7 +77,10 @@ public class AccountServiceImpl implements AccountService{
         return accountNumber;
     }
 
-
+    /**
+     * Zwraca sumę kontrolną
+     * @return
+     */
     private String generateCheckSum() {
         return "00";
     }

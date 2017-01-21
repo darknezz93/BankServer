@@ -24,6 +24,10 @@ import java.util.List;
 /**
  * Created by adam on 16.01.17.
  */
+
+/**
+ * Kontroler odpowiedzialny za wypłaty własne
+ */
 public class WithdrawalController {
 
     @FXML
@@ -43,6 +47,10 @@ public class WithdrawalController {
 
     private List<Account> accounts = new ArrayList<>();
 
+    /**
+     * Metoda inicjująca dane. Wywoływana po utworzeniu okna
+     * @throws MalformedURLException
+     */
     @FXML
     public void initialize() throws MalformedURLException {
         AccountService accountService = getAccountService();
@@ -70,7 +78,10 @@ public class WithdrawalController {
         });
     }
 
-
+    /**
+     * Metoda wywoływana po naciśnięciu przycisku wypłać
+     * @throws Exception
+     */
     @FXML
     public void listenWithdrawalButton() throws Exception {
         resetLabels();
@@ -91,9 +102,13 @@ public class WithdrawalController {
         TransactionService trnService = getTransactionService();
         Account account = trnService.doWithdrawal(accountNumber, amount, ClientAuth.getEncodedAuth());
         refreshComboBoxes(amount);
-        //updateAccounts(account);
     }
 
+    /**
+     * Zwraca accountService
+     * @return
+     * @throws MalformedURLException
+     */
     private AccountService getAccountService() throws MalformedURLException {
         URL url = new URL("http://localhost:8000/account?wsdl");
         QName qname = new QName("http://service/", "AccountServiceImplService");
@@ -102,6 +117,11 @@ public class WithdrawalController {
         return webService;
     }
 
+    /**
+     * Odświeża zawartość comboBoxów
+     * @param amount
+     * @throws MalformedURLException
+     */
     private void refreshComboBoxes(double amount) throws MalformedURLException {
         AccountService accountService = getAccountService();
         accounts = accountService.getAccounts(ClientAuth.getEncodedAuth());
@@ -111,18 +131,11 @@ public class WithdrawalController {
         balanceLabel.setText(String.valueOf(senderAcc.getBalance() - amount));
     }
 
-    private void updateAccounts(Account account) {
-        for(Account acc : accounts) {
-            if(account.getAccountNumber().equals(acc.getAccountNumber())) {
-                acc = account;
-                balanceLabel.setText(String.valueOf(acc.getBalance()));
-                accountComboBox.setItems(FXCollections.observableArrayList(accounts));
-                accountComboBox.setValue(acc);
-                return;
-            }
-        }
-    }
-
+    /**
+     * Zwraca transactionService
+     * @return
+     * @throws MalformedURLException
+     */
     private TransactionService getTransactionService() throws MalformedURLException {
         URL url = new URL("http://localhost:8000/transaction?wsdl");
         QName qname = new QName("http://service/", "TransactionServiceImplService");
@@ -131,6 +144,9 @@ public class WithdrawalController {
         return webService;
     }
 
+    /**
+     * Resetuje zawartość labelek
+     */
     private void resetLabels() {
         errorLabel.setText("");
     }

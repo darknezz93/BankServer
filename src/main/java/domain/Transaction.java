@@ -14,6 +14,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * Created by adam on 06.01.17.
  */
 
+/**
+ * Klasa domenowa dla transakcji
+ */
 @Entity
 public class Transaction {
 
@@ -73,40 +76,20 @@ public class Transaction {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getSourceAccountNumber() {
         return sourceAccountNumber;
-    }
-
-    public void setSourceAccountNumber(String sourceAccountNumber) {
-        this.sourceAccountNumber = sourceAccountNumber;
     }
 
     public String getTargetAccountNumber() {
         return targetAccountNumber;
     }
 
-    public void setTargetAccountNumber(String targetAccountNumber) {
-        this.targetAccountNumber = targetAccountNumber;
-    }
-
     public double getBalance() {
         return balance;
     }
 
-    public void setBalance(double balance) {
-        this.balance = balance;
-    }
-
     public OperationType getOperationType() {
         return operationType;
-    }
-
-    public void setOperationType(OperationType operationType) {
-        this.operationType = operationType;
     }
 
     public double getAmount() {

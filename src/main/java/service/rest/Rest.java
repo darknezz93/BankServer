@@ -19,10 +19,19 @@ import javax.ws.rs.core.Response;
  * Created by adam on 11.01.17.
  */
 
+/**
+ * Klasa odpowiedzialna za udostępnione usługi restowe
+ */
 @Singleton
 @Path("/")
 public class Rest {
 
+    /**
+     * Metoda odpowedzialna za dokonanie przelewu wewnętrznego
+     * @param restObject
+     * @return
+     * @throws Exception
+     */
     @POST
     @Path("/transfer")
     @Consumes({"application/json"})
@@ -64,13 +73,23 @@ public class Rest {
         return Response.status(201).entity(transaction).build();
     }
 
-
+    /**
+     * Zamienia przekazaną kwotę na typ double
+     * @param amount
+     * @return
+     */
     private double convertToDouble(int amount) {
         String amountStr = Integer.toString(amount);
         amountStr = amountStr.substring(0, amountStr.length() - 2) + "." + amountStr.substring(amountStr.length() - 2, amountStr.length());
         return Double.parseDouble(amountStr);
     }
 
+    /**
+     * Znajduje użytkownika na podstawie przekazanego numeru konta
+     * @param accountNumber
+     * @return
+     * @throws Exception
+     */
     private User findUserByAccountNumber(String accountNumber) throws Exception {
         Datastore datastore = DatabaseService.getDatastore();
         User user = datastore.createQuery(User.class).field("accounts").contains(accountNumber).get();

@@ -11,8 +11,16 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.net.URL;
 
+/**
+ * Klasa main dla aplikacji klienta
+ */
 public class Main extends Application {
 
+    /**
+     * Otwiera okno rejestracji/logowania użytkownika
+     * @param primaryStage
+     * @throws Exception
+     */
     @Override
     public void start(Stage primaryStage) throws Exception{
         URL url = new File("src/main/java/clientApp/layouts/sample.fxml").toURL();

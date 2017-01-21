@@ -7,6 +7,10 @@ import javafx.scene.layout.Region;
 /**
  * Created by adam on 16.01.17.
  */
+
+/**
+ * Klasa tworząca okienko z alertami
+ */
 public class AlertMessage {
 
     public static void infoBox(String infoMessage, String titleBar) {

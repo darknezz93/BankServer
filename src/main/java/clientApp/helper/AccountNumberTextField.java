@@ -7,6 +7,10 @@ import javafx.scene.input.KeyEvent;
 /**
  * Created by adam on 17.01.17.
  */
+
+/**
+ * Textfield dla numeru rachunku
+ */
 public class AccountNumberTextField extends TextField {
 
     public AccountNumberTextField() {

@@ -23,17 +23,29 @@ import java.net.URI;
 /**
  * Created by adam on 06.01.17.
  */
+
+/**
+ * Klasa odpowiedzialna za uruchomienie aplikacji serwera
+ */
 public class GrizzlyServer {
 
     private static final int SOAP_PORT = 8000;
     private static final int REST_PORT = 8080;
 
+    /**
+     * Metoda main
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
-
-        openSoapServices();
+        listenServices();
     }
 
-    private static void openSoapServices() throws IOException {
+    /**
+     * Metoda ustawiajaca handlery obsługujące poszczególne usługi oraz listener dla serwisów restowych
+     * @throws IOException
+     */
+    private static void listenServices() throws IOException {
 
         /** SOAP */
         URI soapUri = UriBuilder.fromUri("http://localhost/").port(SOAP_PORT).build();

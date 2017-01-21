@@ -15,11 +15,20 @@ import java.util.StringTokenizer;
  * Created by adam on 06.01.17.
  */
 
+/**
+ * Serwis usług użytkownika
+ */
 @WebService(endpointInterface = "service.UserService")
 public class UserServiceImpl implements UserService {
 
     private AuthorizationTool authTool = new AuthorizationTool();
 
+    /**
+     * Rejestracja użytkownika
+     * @param encodedAuth
+     * @return
+     * @throws Exception
+     */
     @WebMethod
     public boolean registerUser(@WebParam(name="encodedAuth") String encodedAuth) throws Exception {
         try {
@@ -45,6 +54,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * Logowanie użytkownika
+     * @param encodedAuth
+     * @return
+     */
     @WebMethod
     public boolean login(@WebParam(name="encodedAuth") String encodedAuth) {
         User user = authTool.checkUserExistence(encodedAuth);

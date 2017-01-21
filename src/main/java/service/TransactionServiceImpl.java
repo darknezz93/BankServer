@@ -32,13 +32,23 @@ import java.util.Properties;
  * Created by adam on 06.01.17.
  */
 
+/**
+ * Klasa pełniąca rolę serwisu usług transakcyjnych
+ */
 @WebService(endpointInterface = "service.TransactionService")
 public class TransactionServiceImpl implements TransactionService{
 
 
     private AuthorizationTool authTool = new AuthorizationTool();
 
-
+    /**
+     * Wpłata własna
+     * @param accountNumber
+     * @param amount
+     * @param encodedAuth
+     * @return
+     * @throws Exception
+     */
     @WebMethod
     public Account doPayment(@WebParam(name="accountNumber") String accountNumber,
                           @WebParam(name="amount") double amount,
@@ -62,6 +72,14 @@ public class TransactionServiceImpl implements TransactionService{
         return account;
     }
 
+    /**
+     * Wypłata własna
+     * @param accountNumber
+     * @param amount
+     * @param encodedAuth
+     * @return
+     * @throws Exception
+     */
     @WebMethod
     public Account doWithdrawal(@WebParam(name="accountNumber") String accountNumber,
                              @WebParam(name="amount") double amount,
@@ -88,6 +106,16 @@ public class TransactionServiceImpl implements TransactionService{
         return account;
     }
 
+    /**
+     * Przelew wewnętrzny
+     * @param sourceAccountNumber
+     * @param targetAccountNumber
+     * @param title
+     * @param amount
+     * @param encodedAuth
+     * @return
+     * @throws Exception
+     */
     @WebMethod
     public Account doInternalTransfer(@WebParam(name="sourceAccountNumber") String sourceAccountNumber,
                                    @WebParam(name="targetAccountNumber") String targetAccountNumber,
@@ -119,6 +147,16 @@ public class TransactionServiceImpl implements TransactionService{
         }
     }
 
+    /**
+     * Przelew zewnętrzny
+     * @param sourceAccountNumber
+     * @param targetAccountNumber
+     * @param title
+     * @param amount
+     * @param encodedAuth
+     * @return
+     * @throws Exception
+     */
     @WebMethod
     public int doExternalTransfer(@WebParam(name="sourceAccountNumber") String sourceAccountNumber,
                                                               @WebParam(name="targetAccountNumber") String targetAccountNumber,
@@ -137,7 +175,7 @@ public class TransactionServiceImpl implements TransactionService{
         } else if(amount < 0) {
             throw new Exception("The amount can not be less than 0.");
         } else {
-            String url = getReceiverUrl(targetAccountNumber);
+            String url = getReceiverUri(targetAccountNumber);
             if(url == null) {
                 return Response.Status.CONFLICT.getStatusCode();
             }
@@ -173,6 +211,11 @@ public class TransactionServiceImpl implements TransactionService{
         return statusCode;
     }
 
+    /**
+     * Pobranie listy operacji
+     * @param encodedAuth
+     * @return
+     */
     @WebMethod
     public List<Transaction> getTransactions(@WebParam(name="encodedAuth") String encodedAuth) {
         User user = authTool.checkUserExistence(encodedAuth);
@@ -181,7 +224,13 @@ public class TransactionServiceImpl implements TransactionService{
         return transactions;
     }
 
-
+    /**
+     * Znajduje konto spośród przekazanej lsity kont na podstawie numeru konta
+     * @param accounts
+     * @param accountNumber
+     * @return
+     * @throws Exception
+     */
     private Account findUserAccountByAccountNumber(List<Account> accounts, String accountNumber) throws Exception {
         Account acc = accounts.stream().filter(account -> account.getAccountNumber().equals(accountNumber)).findAny().orElse(null);
         if(acc == null) {
@@ -190,7 +239,13 @@ public class TransactionServiceImpl implements TransactionService{
         return acc;
     }
 
-    private String getReceiverUrl(String accountNumber) throws Exception {
+    /**
+     * Zwraca uri odbiorcy
+     * @param accountNumber
+     * @return
+     * @throws Exception
+     */
+    private String getReceiverUri(String accountNumber) throws Exception {
         Properties properties = new Properties();
         InputStream inputStream = new FileInputStream("src/main/resources/addresses.properties");
         properties.load(inputStream);
@@ -199,6 +254,11 @@ public class TransactionServiceImpl implements TransactionService{
         return url;
     }
 
+    /**
+     * Przygotowuje kwotę dla przelewu zewnętrznego
+     * @param amount
+     * @return
+     */
     private String prepareAmount(double amount) {
         String amountStr = Double.toString(amount);
         if(amountStr.contains(".") || amountStr.contains(",")) {

@@ -55,6 +55,10 @@ public class InternalTransferController {
 
     private List<Account> receiverAccounts = new ArrayList<>();
 
+    /**
+     * Metoda inicjalizująca dane. Wywoływana po utworzeniu okna
+     * @throws MalformedURLException
+     */
     @FXML
     public void initialize() throws MalformedURLException {
         AccountService accountService = getAccountService();
@@ -66,6 +70,9 @@ public class InternalTransferController {
 
     }
 
+    /**
+     * Metoda inicjująca dla combo boxa z rachunkami nadawcy
+     */
     private void initializeSenderAccountComboBox() {
         senderAccountComboBox.setItems(FXCollections.observableArrayList(senderAccounts));
         senderAccountComboBox.setConverter(new StringConverter<Account>() {
@@ -90,6 +97,9 @@ public class InternalTransferController {
         });
     }
 
+    /**
+     * Metoda inicjująca dla combo boxa z rachunkiem odbiorcy
+     */
     private void initializeReceiverAccountComboBox() {
         receiverAccountComboBox.setItems(FXCollections.observableArrayList(receiverAccounts));
         receiverAccountComboBox.setConverter(new StringConverter<Account>() {
@@ -106,6 +116,10 @@ public class InternalTransferController {
     }
 
 
+    /**
+     * Metoda wywoływana po naciśnięciu przycisku odpowiedzalnego za przelew wewnętrzny
+     * @throws Exception
+     */
     @FXML
     public void listenInternalTransferButton() throws Exception {
         resetLabels();
@@ -146,6 +160,11 @@ public class InternalTransferController {
         refreshComboBoxes(amount);
     }
 
+    /**
+     * Metoda zwracajaca accountService
+     * @return
+     * @throws MalformedURLException
+     */
     private AccountService getAccountService() throws MalformedURLException {
         URL url = new URL("http://localhost:8000/account?wsdl");
         QName qname = new QName("http://service/", "AccountServiceImplService");
@@ -154,16 +173,11 @@ public class InternalTransferController {
         return webService;
     }
 
-    private void updateAccounts(Account account) {
-        for(Account acc : senderAccounts) {
-            if(account.getAccountNumber().equals(acc.getAccountNumber())) {
-                acc = account;
-                balanceLabel.setText(String.valueOf(acc.getBalance()));
-                return;
-            }
-        }
-    }
-
+    /**
+     * Metoda zwracajaca transactionService
+     * @return
+     * @throws MalformedURLException
+     */
     private TransactionService getTransactionService() throws MalformedURLException {
         URL url = new URL("http://localhost:8000/transaction?wsdl");
         QName qname = new QName("http://service/", "TransactionServiceImplService");
@@ -172,12 +186,16 @@ public class InternalTransferController {
         return webService;
     }
 
+    /**
+     * Metoda odświeżająca zawartość comboBoxów
+     * @param amount
+     * @throws MalformedURLException
+     */
     private void refreshComboBoxes(double amount) throws MalformedURLException {
         AccountService accountService = getAccountService();
         Account senderAcc = senderAccountComboBox.getSelectionModel().getSelectedItem();
         Account receiverAcc = receiverAccountComboBox.getSelectionModel().getSelectedItem();
         senderAccounts = accountService.getAccounts(ClientAuth.getEncodedAuth());
-        //receiverAccounts = accountService.getOtherAccounts(ClientAuth.getEncodedAuth());
         receiverAccounts = senderAccounts;
         senderAccountComboBox.setItems(FXCollections.observableArrayList(senderAccounts));
         receiverAccountComboBox.setItems(FXCollections.observableArrayList(receiverAccounts));
@@ -186,6 +204,9 @@ public class InternalTransferController {
         balanceLabel.setText(String.valueOf(senderAcc.getBalance()-amount));
     }
 
+    /**
+     * Metoda resetująca zawartość labelek z błędami lub informacjami dla użytkownika
+     */
     private void resetLabels() {
         errorLabel.setText("");
         successLabel.setText("");

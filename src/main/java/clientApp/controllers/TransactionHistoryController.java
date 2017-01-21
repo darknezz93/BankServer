@@ -19,6 +19,10 @@ import java.util.List;
 /**
  * Created by adam on 18.01.17.
  */
+
+/**
+ * Kotnroler odpowiedzialny za okno histori operacji
+ */
 public class TransactionHistoryController {
 
     @FXML
@@ -46,7 +50,10 @@ public class TransactionHistoryController {
     private ObservableList<TransactionTable> transactionData = FXCollections.observableArrayList();
 
 
-
+    /**
+     * Metoda inicjująca wywoływana po utworzeniu okna i wypełniająca poszczególne pola tabeli
+     * @throws MalformedURLException
+     */
     @FXML
     public void initialize() throws MalformedURLException {
         TransactionService transactionService = getTransactionService();
@@ -68,6 +75,11 @@ public class TransactionHistoryController {
         balanceColumn.setCellValueFactory(cellData -> cellData.getValue().balanceProperty().asObject());
     }
 
+    /**
+     * Zwraca transactionService
+     * @return
+     * @throws MalformedURLException
+     */
     private TransactionService getTransactionService() throws MalformedURLException {
         URL url = new URL("http://localhost:8000/transaction?wsdl");
         QName qname = new QName("http://service/", "TransactionServiceImplService");

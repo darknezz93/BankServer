@@ -11,8 +11,17 @@ import java.util.StringTokenizer;
 /**
  * Created by adam on 08.01.17.
  */
+
+/**
+ * Klasa pomocnicza przy autoryzacji użytkownika wewnętrznego banku
+ */
 public class AuthorizationTool {
 
+    /**
+     * Sprawdza istnienie użytkownika na podstawie przekazanych danych autoryzacyjnych zakodowanych algorytmem Base64
+     * @param encodedAuth
+     * @return
+     */
     public User checkUserExistence(String encodedAuth) {
         String usernameAndPassword = new String(Base64.decode(encodedAuth.getBytes()));
         final StringTokenizer tokenizer = new StringTokenizer(usernameAndPassword, ":");

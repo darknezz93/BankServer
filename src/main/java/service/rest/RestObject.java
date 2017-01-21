@@ -3,6 +3,10 @@ package service.rest;
 /**
  * Created by adam on 13.01.17.
  */
+
+/**
+ * Pomocniczy obiekt przekazywany do usługi restowej
+ */
 public class RestObject {
 
     private int amount;

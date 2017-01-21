@@ -26,6 +26,10 @@ import java.util.List;
 /**
  * Created by adam on 17.01.17.
  */
+
+/**
+ * Kontroler odpowiedzialny za okno przelewów zewnętrznych
+ */
 public class ExternalTransferController {
 
     @FXML
@@ -54,6 +58,10 @@ public class ExternalTransferController {
 
     private List<Account> senderAccounts = new ArrayList<>();
 
+    /**
+     * Metoda inicjalizująca dane. Wywoływana po utworzeniu okna
+     * @throws MalformedURLException
+     */
     @FXML
     public void initialize() throws MalformedURLException {
         AccountService accountService = getAccountService();
@@ -61,6 +69,9 @@ public class ExternalTransferController {
         initializeSenderAccountComboBox();
     }
 
+    /**
+     * Metoda inicjująca dla combo boxów z rachunkami
+     */
     private void initializeSenderAccountComboBox() {
         senderAccountComboBox.setItems(FXCollections.observableArrayList(senderAccounts));
         senderAccountComboBox.setConverter(new StringConverter<Account>() {
@@ -85,6 +96,10 @@ public class ExternalTransferController {
         });
     }
 
+    /**
+     * Metoda wywoływana po naciśnięciu przycisku odpowiedzalnego za przelew zewnętrzny
+     * @throws Exception
+     */
     @FXML
     public void listenExternalTransferButton() throws Exception {
         resetLabels();
@@ -129,7 +144,6 @@ public class ExternalTransferController {
             errorLabel.setText("Brak autoryzacji uzytkownika");
         }
         if(response == 201) {
-            //updateAccounts(senderAccountNumber, senderAccountComboBox.getValue().getBalance() - amount);
             refreshComboBoxes(amount);
             successLabel.setText("Przelew zewnętrzny zakończony pozytywnie.");
         } else if(response == 400) {
@@ -145,6 +159,11 @@ public class ExternalTransferController {
         }
     }
 
+    /**
+     * Metoda zwracajaca accountService
+     * @return
+     * @throws MalformedURLException
+     */
     private AccountService getAccountService() throws MalformedURLException {
         URL url = new URL("http://localhost:8000/account?wsdl");
         QName qname = new QName("http://service/", "AccountServiceImplService");
@@ -153,16 +172,11 @@ public class ExternalTransferController {
         return webService;
     }
 
-    private void updateAccounts(String accountNumber, double balance) {
-        for(Account acc : senderAccounts) {
-            if(accountNumber.equals(acc.getAccountNumber())) {
-                acc.setBalance(balance);
-                balanceLabel.setText(String.valueOf(acc.getBalance()));
-                return;
-            }
-        }
-    }
-
+    /**
+     * Metoda zwracająca transactionService
+     * @return
+     * @throws MalformedURLException
+     */
     private TransactionService getTransactionService() throws MalformedURLException {
         URL url = new URL("http://localhost:8000/transaction?wsdl");
         QName qname = new QName("http://service/", "TransactionServiceImplService");
@@ -171,6 +185,11 @@ public class ExternalTransferController {
         return webService;
     }
 
+    /**
+     * Metoda uaktualniajaca zawartość comboBoxów
+     * @param amount
+     * @throws MalformedURLException
+     */
     private void refreshComboBoxes(double amount) throws MalformedURLException {
         AccountService accountService = getAccountService();
         senderAccounts = accountService.getAccounts(ClientAuth.getEncodedAuth());
@@ -180,6 +199,9 @@ public class ExternalTransferController {
         balanceLabel.setText(String.valueOf(senderAcc.getBalance() - amount));
     }
 
+    /**
+     * Metoda resetująca zawartość labelek z błędami lub informacjami dla użytkownika
+     */
     private void resetLabels() {
         errorLabel.setText("");
         successLabel.setText("");

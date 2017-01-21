@@ -20,6 +20,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 
+/**
+ * Kontroler odpowiedzialny za rejestrację i logowanie użytkownika
+ */
 public class LoginController {
 
     @FXML
@@ -40,6 +43,10 @@ public class LoginController {
     @FXML
     private Label successLabel;
 
+    /**
+     * Metoda wywoływana po naciśnięciu przycisku logowania
+     * @throws Exception
+     */
     @FXML
     public void listenLoginButton() throws Exception {
         resetLabels();
@@ -65,6 +72,10 @@ public class LoginController {
         }
     }
 
+    /**
+     * Metoda wywoływana po naciśnięciu przycisku rejestracji
+     * @throws Exception
+     */
     @FXML
     public void listenRegisterButton() throws Exception {
         resetLabels();
@@ -83,6 +94,10 @@ public class LoginController {
         }
     }
 
+    /**
+     * Wstępna walidacja pól userName i password
+     * @return
+     */
     public boolean validateUserNameAndPassword() {
         String userName = userNameTextField.getText();
         String password = passwordTextField.getText();
@@ -94,6 +109,11 @@ public class LoginController {
         return true;
     }
 
+    /**
+     * Metoda zwaracjaca userService
+     * @return
+     * @throws MalformedURLException
+     */
     private UserService getUserService() throws MalformedURLException {
         URL url = new URL("http://localhost:8000/user?wsdl");
         QName qname = new QName("http://service/", "UserServiceImplService");
@@ -102,6 +122,12 @@ public class LoginController {
         return webService;
     }
 
+    /**
+     * Metoda otwierająca nowe okno
+     * @param fxmlFilePath - scieżka do pliku fxml opisującego nowe okno
+     * @param windowTitle - tytuł okna
+     * @throws IOException
+     */
     private void openNewWindow(String fxmlFilePath, String windowTitle) throws IOException {
         URL url = new File(fxmlFilePath).toURL();
         Parent root1 = FXMLLoader.load(url);
@@ -111,6 +137,9 @@ public class LoginController {
         stage.show();
     }
 
+    /**
+     * Metoda resetująca zawartość labelek z błędami lub informacjami dla użytkownika
+     */
     private void resetLabels() {
         successLabel.setText("");
         errorLabel.setText("");

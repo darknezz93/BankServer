@@ -3,6 +3,10 @@ package clientApp.helper;
 /**
  * Created by adam on 16.01.17.
  */
+
+/**
+ * POmocnicza klasa przechowująca dane autoryzacyjne
+ */
 public class ClientAuth {
     private static String encodedAuth = "";
 
